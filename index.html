@@ -105,6 +105,31 @@
       margin-top: 55px;
     }
 
+
+    /* ===== 상품 검색창 ===== */
+    .search-area {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .search-box {
+      width: 320px;
+      max-width: 80%;             /* 화면이 좁으면 줄어듦 */
+      font-size: 18px;
+      border: 3px solid #F08A3C;
+      border-radius: 999px;
+      padding: 14px 24px;
+      outline: none;              /* 클릭했을 때 생기는 파란 테두리 제거 */
+    }
+
+    /* 검색 결과가 없을 때 나오는 안내 */
+    .no-result {
+      text-align: center;
+      font-size: 19px;
+      padding: 40px 20px;
+      display: none;              /* 평소에는 숨겨둠 */
+    }
+
     .products {
       display: flex;              /* 카드를 가로로 나란히 */
       justify-content: center;
@@ -142,6 +167,21 @@
       border-radius: 45px 45px 8px 8px;  /* 왼위 오른위 오른아래 왼아래 */
       border: 3px dashed #5BA3C9;        /* 파란 점선 테두리 */
       background-color: #F5FBFF;         /* 연한 하늘색 배경 */
+    }
+
+    /* 카드 오른쪽 위 찜하기 하트 */
+    .heart {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 28px;
+      cursor: pointer;            /* 마우스를 올리면 손가락 모양 */
+      user-select: none;          /* 글자처럼 드래그되지 않게 */
+      transition: 0.15s;
+    }
+
+    .heart:hover {
+      transform: scale(1.25);     /* 마우스를 올리면 살짝 커짐 */
     }
 
     /* 카드 왼쪽 위 BEST 배지 */
@@ -319,9 +359,16 @@
   <!-- 상품 카드 -->
   <h3 class="title">🌿 이번 주 인기 상품 🌿</h3>
 
+  <!-- 상품 검색창 -->
+  <div class="search-area">
+    <input type="text" id="searchBox" class="search-box"
+           placeholder="🔍 상품 이름을 입력하세요" onkeyup="searchProduct()">
+  </div>
+
   <div class="products">
 
     <div class="card">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <div class="emoji">🦷</div>
       <p class="category">치아 건강</p>
       <h4>치석 케어 덴탈츄</h4>
@@ -331,6 +378,7 @@
     </div>
 
     <div class="card">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <div class="emoji">🌿</div>
       <p class="category">장 건강</p>
       <h4>편안한 장 유산균</h4>
@@ -340,6 +388,7 @@
     </div>
 
     <div class="card shape2">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
       <div class="emoji">💊</div>
       <p class="category">눈·피부</p>
@@ -350,6 +399,7 @@
     </div>
 
     <div class="card shape3">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <div class="emoji">🐟</div>
       <p class="category">눈·피부</p>
       <h4>반짝 피부 오메가3</h4>
@@ -359,6 +409,7 @@
     </div>
 
     <div class="card">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
       <div class="emoji">🦴</div>
       <p class="category">튼튼 영양제</p>
@@ -369,6 +420,7 @@
     </div>
 
     <div class="card">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <div class="emoji">😴</div>
       <p class="category">마음 안정</p>
       <h4>편안한 밤 진정츄</h4>
@@ -378,6 +430,7 @@
     </div>
 
     <div class="card">
+      <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <div class="emoji">❤️</div>
       <p class="category">튼튼 영양제</p>
       <h4>튼튼 심장 코엔자임</h4>
@@ -387,6 +440,9 @@
     </div>
 
   </div>
+
+  <!-- 검색 결과가 없을 때 -->
+  <p class="no-result" id="noResult">😢 찾으시는 상품이 없어요.<br>다른 이름으로 검색해 보세요.</p>
 
   <!-- 쇼핑몰 소개 -->
   <div class="about">
@@ -461,6 +517,43 @@
       document.getElementById("cartCount").innerText = cartCount;
 
       alert(name + " 을(를) 장바구니에 담았어요! 🛒\n지금까지 담은 상품: " + cartCount + "개");
+    }
+
+    // ===== 상품 검색 =====
+    // 검색창에 글자를 칠 때마다 실행됩니다
+    function searchProduct() {
+      var word = document.getElementById("searchBox").value;
+      var cards = document.querySelectorAll(".card");
+      var found = 0;   // 찾은 상품 개수
+
+      for (var i = 0; i < cards.length; i++) {
+        // 카드 안의 모든 글자(상품명, 카테고리, 가격)에서 검색어를 찾습니다
+        var text = cards[i].innerText;
+
+        if (text.indexOf(word) >= 0) {
+          cards[i].style.display = "block";   // 보이기
+          found = found + 1;
+        } else {
+          cards[i].style.display = "none";    // 숨기기
+        }
+      }
+
+      // 하나도 못 찾으면 안내문을 보여줍니다
+      if (found === 0) {
+        document.getElementById("noResult").style.display = "block";
+      } else {
+        document.getElementById("noResult").style.display = "none";
+      }
+    }
+
+    // ===== 찜하기 하트 =====
+    // 하트를 누르면 빈 하트와 빨간 하트가 번갈아 바뀝니다
+    function toggleHeart(heart) {
+      if (heart.innerText === "🤍") {
+        heart.innerText = "❤️";    // 빈 하트 -> 빨간 하트
+      } else {
+        heart.innerText = "🤍";    // 빨간 하트 -> 빈 하트
+      }
     }
 
     // ===== 할인율 자동 계산 =====
