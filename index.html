@@ -3,849 +3,361 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>라떼 문구점</title>
+  <title>건강판다</title>
 
   <style>
-    /* 기본 설정 */
+    /* ===== 전체 기본 설정 ===== */
     body {
       margin: 0;
       font-family: "맑은 고딕", sans-serif;
-      background-color: #f4fbff;
-      color: #33475b;
+      background-color: #E8A87C;  /* 배경색 */
+      color: #4A3B32;
+      font-size: 18px;            /* 어르신도 편하게 읽도록 글씨를 크게 */
+      line-height: 1.7;
     }
 
-    /* 맨 위 (헤더) */
+    /* ===== 맨 위: 쇼핑몰 이름 ===== */
     header {
-      background-color: #bfe6ff;
-      padding: 30px 20px;
+      background-color: #F08A3C;  /* 따뜻한 주황색 */
+      color: white;
       text-align: center;
+      padding: 35px 20px;
     }
+
     header h1 {
       margin: 0;
-      font-size: 34px;
+      font-size: 40px;
     }
+
     header p {
-      margin: 8px 0 0;
-      font-size: 15px;
+      margin: 12px 0 0 0;
+      font-size: 19px;
     }
 
-    /* 메뉴 */
-    nav {
-      background-color: #ffffff;
-      text-align: center;
-      padding: 15px;
-    }
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #33475b;
-      font-weight: bold;
-    }
-
-    /* 큰 배너 */
-    .banner {
-      background-color: #d9f0ff;
-      text-align: center;
-      padding: 60px 20px;
-    }
-    .banner h2 {
-      font-size: 28px;
-      margin: 0 0 10px;
-    }
-    .banner p {
-      margin: 0 0 25px;
-    }
-
-    /* 버튼 */
-    button {
-      background-color: #7fc8f8;
-      color: white;
-      border: none;
-      padding: 14px 30px;
-      font-size: 16px;
-      border-radius: 25px;
-      cursor: pointer;
-    }
-
-    /* 검색창 */
-    .search {
-      text-align: center;
-      padding: 40px 20px 0;
-    }
-    .search input {
-      width: 100%;
-      max-width: 420px;
-      padding: 14px 20px;
-      font-size: 15px;
-      border: 2px solid #bfe6ff;
-      border-radius: 25px;
-      outline: none;
-      box-sizing: border-box;
-    }
-    .search input:focus {
-      border-color: #7fc8f8;
-    }
-
-    /* 찾는 상품이 없을 때 안내문 */
-    .no-result {
-      display: none;          /* 평소에는 숨겨둡니다 */
-      text-align: center;
-      font-size: 16px;
-      color: #6b7f92;
-      line-height: 1.8;
-      padding: 30px 20px 60px;
-      margin: 0;
-    }
-
-    /* 카테고리 버튼 */
-    .category {
-      text-align: center;
-      padding: 20px 20px 0;
-    }
-    .category button {
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      margin: 5px;
-      font-size: 15px;
-      font-weight: bold;
-      border-radius: 20px;
-      cursor: pointer;
-      opacity: 0.4;          /* 선택 안 된 버튼은 흐리게 */
-    }
-
-    /* 지금 선택된 버튼 */
-    .category button.on {
-      opacity: 1;            /* 진하게 */
-      transform: scale(1.1); /* 살짝 크게 */
-      box-shadow: 0 4px 10px #d6e8f5;
-    }
-
-    /* 버튼마다 색이 다릅니다 */
-    .cat-all   { background-color: #7fc8f8; }
-    .cat-pen   { background-color: #ff9db1; }
-    .cat-paper { background-color: #ffc978; }
-    .cat-art   { background-color: #8fd6b4; }
-    .cat-etc   { background-color: #b8a6e8; }
-
-    /* 상품 목록 */
-    .products {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 25px 20px 50px;
-    }
-    .card {
-      background-color: white;
-      border-radius: 20px;
-      width: 200px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 3px 10px #dceefc;
-      position: relative;
-    }
-
-    /* 분류마다 어울리는 테두리 색 */
-    .card.pen   { border: 3px solid #ff9db1; }   /* 필기구 - 분홍 */
-    .card.paper { border: 3px solid #ffc978; }   /* 노트·종이 - 주황 */
-    .card.art   { border: 3px solid #8fd6b4; }   /* 미술용품 - 초록 */
-    .card.etc   { border: 3px solid #b8a6e8; }   /* 기타용품 - 보라 */
-
-    /* 마우스를 올리면 살짝 떠오릅니다 */
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 20px #cfe8fa;
-    }
-
-    /* 할인율 배지 */
-    .badge {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background-color: #ff7aa2;
-      color: white;
-      font-size: 13px;
-      font-weight: bold;
-      padding: 5px 10px;
-      border-radius: 12px;
-    }
-    /* 베스트 상품 배지 (왼쪽 아래, 하트 모양) */
-    .best {
-      position: absolute;
-      top: 44px;
-      left: 8px;
-      width: 52px;
-      height: 48px;
-      background-color: #ff7aa2;
-      /* 하트 모양으로 잘라냅니다 */
-      clip-path: path('M26,45 C6,31 2,18 9,11 C16,4 26,9 26,16 C26,9 36,4 43,11 C50,18 46,31 26,45 Z');
-      color: white;
-      font-size: 11px;
-      font-weight: bold;
-      text-align: center;
-      padding-top: 14px;
-      box-sizing: border-box;
-    }
-
-    /* 찜하기 하트 버튼 (오른쪽 위) */
-    .wish {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 26px;
-      line-height: 1;
-      color: #ffc2d1;
-      cursor: pointer;
-    }
-    /* 찜한 상태 */
-    .wish.on {
-      color: #ff4d79;
-    }
-
-    /* 헤더의 찜 개수 */
-    .wish-count {
+    /* 맨 위 장바구니 표시 */
+    .cart {
       display: inline-block;
       background-color: white;
-      color: #ff4d79;
+      color: #B35B1F;
+      font-size: 18px;
       font-weight: bold;
-      font-size: 14px;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-top: 12px;
-    }
+      border-radius: 999px;
+      padding: 8px 22px;
+      margin: 16px 0 0 0;
     }
 
-    /* 이모지 그림 상자 (지금은 사진을 쓰지만, 다시 이모지로 바꿀 때 필요합니다) */
-    .emoji {
-      font-size: 65px;
-      line-height: 140px;
-      background: linear-gradient(#eaf7ff, #fdf0f5);
-      border-radius: 15px;
+    /* ===== 메뉴 4개 ===== */
+    nav {
+      background-color: #FBE5D2;
+      text-align: center;
+      padding: 18px;
     }
 
-    /* 상품 사진 */
-    .photo {
-      width: 100%;
-      aspect-ratio: 1 / 1;   /* 가로:세로 = 10:10 (정사각형) */
-      object-fit: cover;
-      border-radius: 15px;
-      background: linear-gradient(#eaf7ff, #fdf0f5);
-      display: block;
-    }
-
-    .card h3 {
-      font-size: 16px;
-      margin: 15px 0 8px;
-    }
-    .price {
-      color: #ff7aa2;
-      font-weight: bold;
+    nav a {
+      color: #B35B1F;
+      text-decoration: none;
       font-size: 20px;
-    }
-    .old-price {
-      color: #aaaaaa;
-      text-decoration: line-through;
-      font-size: 14px;
-      margin-top: 0;
+      font-weight: bold;
+      margin: 0 14px;
     }
 
-    /* 담기 버튼 */
-    .buy {
-      background-color: #eaf7ff;
-      color: #4aa3d8;
+    nav a:hover {
+      color: #E56A15;
+    }
+
+    /* ===== 큰 배너 ===== */
+    .banner {
+      background-color: #FBD9BC;
+      text-align: center;
+      padding: 65px 20px;
+    }
+
+    .banner h2 {
+      font-size: 46px;
+      margin: 0 0 12px 0;
+    }
+
+    .banner p {
+      font-size: 24px;
+      margin: 0 0 28px 0;
+    }
+
+    /* 주황색 버튼 */
+    .btn {
+      background-color: #F08A3C;
+      color: white;
       border: none;
-      width: 100%;
-      padding: 10px;
+      border-radius: 999px;       /* 숫자를 아주 크게 주면 완전한 알약 모양 */
+      padding: 16px 40px;
+      font-size: 19px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #E56A15;
+    }
+
+    /* ===== 상품 카드 영역 ===== */
+    h3.title {
+      text-align: center;
+      font-size: 27px;
+      margin-top: 55px;
+    }
+
+    .products {
+      display: flex;              /* 카드를 가로로 나란히 */
+      justify-content: center;
+      flex-wrap: wrap;            /* 화면이 좁으면 아래로 내려감 */
+      gap: 25px;
+      padding: 30px 20px 55px 20px;
+    }
+
+    .card {
+      position: relative;         /* BEST 배지 위치의 기준점 */
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(150, 90, 40, 0.25);  /* 카드 그림자 */
+      transition: 0.2s;                                /* 부드럽게 움직이기 */
+      width: 250px;
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    /* 마우스를 올리면 카드가 살짝 떠오릅니다 */
+    .card:hover {
+      box-shadow: 0 14px 28px rgba(150, 90, 40, 0.35);
+      transform: translateY(-6px);
+    }
+
+    /* 눈·피부 상품은 모양을 다르게 (각진 모서리 + 주황 테두리) */
+    .shape2 {
+      border-radius: 4px;           /* 둥근 모서리 대신 각지게 */
+      border: 3px solid #F08A3C;    /* 주황 테두리 */
+      background-color: #FFFBF6;    /* 살짝 크림빛 배경 */
+    }
+
+    /* 오메가3 카드 모양 (위쪽만 둥글고 점선 테두리) */
+    .shape3 {
+      border-radius: 45px 45px 8px 8px;  /* 왼위 오른위 오른아래 왼아래 */
+      border: 3px dashed #5BA3C9;        /* 파란 점선 테두리 */
+      background-color: #F5FBFF;         /* 연한 하늘색 배경 */
+    }
+
+    /* 카드 왼쪽 위 BEST 배지 */
+    .best {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background-color: #E03B1C;  /* 빨간색 */
+      color: white;
       font-size: 14px;
       font-weight: bold;
       border-radius: 12px;
-      cursor: pointer;
-    }
-    .buy:hover {
-      background-color: #7fc8f8;
-      color: white;
+      padding: 4px 12px;
     }
 
-    /* 쇼핑몰 소개 */
-    .intro {
-      background-color: #ffffff;
-      padding: 55px 20px;
-      text-align: center;
+    .card .emoji {
+      font-size: 72px;            /* 상품 사진 대신 이모지 */
     }
-    .intro h2 {
-      font-size: 24px;
-      margin: 0 0 35px;
-    }
-    .intro-list {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .intro-box {
-      width: 250px;
-      background: linear-gradient(#f2fbff, #fdf4f8);
-      border-radius: 20px;
-      padding: 30px 20px;
-    }
-    .intro-emoji {
-      font-size: 45px;
-    }
-    .intro-box h3 {
-      font-size: 17px;
-      margin: 12px 0 8px;
-    }
-    .intro-box p {
+
+    /* 상품명 위 카테고리 글씨 */
+    .category {
+      display: inline-block;        /* 글자 크기만큼만 배경 채우기 */
+      background-color: #FBE5D2;    /* 연한 주황 배경 */
+      color: #B35B1F;
       font-size: 14px;
-      color: #6b7f92;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    /* 안내글 3개 */
-    .notice {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 45px 20px 55px;
-    }
-    .notice-box {
-      width: 250px;
-      background-color: #ffffff;
-      border: 2px dashed #bfe6ff;
-      border-radius: 15px;
-      padding: 20px;
-    }
-    .notice-box h4 {
-      margin: 0 0 8px;
-      font-size: 15px;
-    }
-    .notice-box p {
-      margin: 0;
-      font-size: 13px;
-      color: #6b7f92;
-      line-height: 1.6;
-    }
-
-    /* 신상품 알림 팝업 */
-    .popup {
-      display: none;              /* 평소에는 숨겨둡니다 */
-      position: fixed;            /* 화면에 고정 */
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.45);   /* 뒷배경 어둡게 */
-      justify-content: center;
-      align-items: center;
-      z-index: 100;               /* 맨 앞에 보이게 */
-    }
-    .popup-box {
-      background-color: white;
-      border-radius: 25px;
-      padding: 35px 30px;
-      text-align: center;
-      width: 300px;
-      max-width: 85%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    .popup-emoji {
-      font-size: 50px;
-    }
-    .popup-box h2 {
-      font-size: 22px;
-      margin: 10px 0;
-      color: #ff4d79;
-    }
-    .popup-box p {
-      font-size: 15px;
-      line-height: 1.7;
-      color: #6b7f92;
-      margin: 0 0 22px;
-    }
-    .popup-close {
-      background-color: #7fc8f8;
-      color: white;
-      border: none;
-      width: 100%;
-      padding: 13px;
-      font-size: 15px;
       font-weight: bold;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-    .popup-again {
-      display: block;
-      margin-top: 14px;
-      font-size: 13px;
-      color: #9aabbb;
-      cursor: pointer;
+      border-radius: 12px;
+      padding: 4px 14px;
+      margin: 12px 0 0 0;
     }
 
-    /* 맨 아래 (푸터) */
+    .card h4 {
+      font-size: 20px;
+      margin: 4px 0 10px 0;
+    }
+
+    /* 할인 전 가격 (회색 + 취소선) */
+    .old-price {
+      color: #AAAAAA;
+      text-decoration: line-through;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    /* 지금 가격 (주황색 굵게) */
+    .price {
+      color: #E56A15;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 5px 0 20px 0;
+    }
+
+    /* 할인율 배지 (빨간 글씨) */
+    .sale {
+      color: #E03B1C;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* ===== 맨 아래: 연락처 ===== */
     footer {
-      background-color: #bfe6ff;
+      background-color: #F08A3C;
+      color: white;
       text-align: center;
-      padding: 25px;
-      font-size: 14px;
+      padding: 32px 20px;
+      font-size: 17px;
+      line-height: 1.9;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- 맨 위: 쇼핑몰 이름 + 한 줄 소개 -->
+  <!-- 맨 위: 쇼핑몰 이름과 한 줄 소개 -->
   <header>
-    <h1>☕ 청소년 문구점</h1>
-    <p>공부가 즐거워지는 귀여운 학생 문구점 ✏️</p>
-    <p class="wish-count">찜한 상품 <span id="wishCount">0</span>개 💗</p>
+    <h1>🐼 건강판다</h1>
+    <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
+    <p class="cart">🛒 장바구니 <span id="cartCount">0</span>개</p>
   </header>
 
   <!-- 메뉴 4개 -->
   <nav>
     <a href="#">홈</a>
-    <a href="#">신상품</a>
-    <a href="#">인기상품</a>
-    <a href="#">고객센터</a>
+    <a href="#">치아 건강</a>
+    <a href="#">장 건강</a>
+    <a href="#">눈·피부</a>
+    <a href="#">튼튼 영양제</a>
+    <a href="#">마음 안정</a>
   </nav>
 
   <!-- 큰 배너 -->
   <div class="banner">
-    <h2>새 학기 맞이 최대 40% 할인!</h2>
-    <p>귀여운 문구로 책상 위를 꾸며보세요 💙</p>
-    <button onclick="showWish()">지금 구경하기</button>
+    <h2>오래오래 건강하게, 함께 걸어요 🐾</h2>
+    <p>우리 아이 건강식품 최대 35% 할인 · 3만원 이상 무료배송</p>
+    <button class="btn" onclick="showEvent()">할인 상품 보러가기</button>
   </div>
 
-  <!-- 검색창 -->
-  <div class="search">
-    <input type="text" id="searchBox" oninput="searchProduct()"
-           placeholder="🔍 찾는 문구를 입력해 보세요 (예: 연필)">
-  </div>
+  <!-- 상품 카드 -->
+  <h3 class="title">🌿 이번 주 인기 상품 🌿</h3>
 
-  <!-- 카테고리 버튼 -->
-  <div class="category">
-    <button class="cat-all on" onclick="showCategory('all', this)">전체</button>
-    <button class="cat-pen"    onclick="showCategory('pen', this)">✏️ 필기구</button>
-    <button class="cat-paper"  onclick="showCategory('paper', this)">📒 노트·종이</button>
-    <button class="cat-art"    onclick="showCategory('art', this)">🎨 미술용품</button>
-    <button class="cat-etc"    onclick="showCategory('etc', this)">🧰 기타용품</button>
-  </div>
-
-  <!-- 상품 카드 18개 -->
   <div class="products">
 
-    <div class="card pen">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
+    <div class="card">
+      <div class="emoji">🦷</div>
+      <p class="category">치아 건강</p>
+      <h4>치석 케어 덴탈츄</h4>
+      <p class="old-price">19,000원</p>
+      <p class="price">12,900원</p>
+      <button class="btn" onclick="addCart('치석 케어 덴탈츄')">장바구니 담기</button>
+    </div>
+
+    <div class="card">
+      <div class="emoji">🌿</div>
+      <p class="category">장 건강</p>
+      <h4>편안한 장 유산균</h4>
+      <p class="old-price">25,000원</p>
+      <p class="price">16,900원</p>
+      <button class="btn" onclick="addCart('편안한 장 유산균')">장바구니 담기</button>
+    </div>
+
+    <div class="card shape2">
       <span class="best">BEST</span>
-      <span class="badge">30% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/pencils?lock=11" alt="파스텔 연필 세트">
-      <h3>파스텔 연필 세트</h3>
-      <p class="price">3,500원</p>
-      <p class="old-price">5,000원</p>
-      <button class="buy" onclick="addCart('파스텔 연필 세트')">장바구니 담기 🛒</button>
+      <div class="emoji">💊</div>
+      <p class="category">눈·피부</p>
+      <h4>맑은 눈 루테인</h4>
+      <p class="old-price">28,000원</p>
+      <p class="price">18,900원</p>
+      <button class="btn" onclick="addCart('맑은 눈 루테인')">장바구니 담기</button>
     </div>
 
-    <div class="card paper">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">30% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/notebook?lock=12" alt="구름 무늬 노트">
-      <h3>구름 무늬 노트</h3>
-      <p class="price">4,200원</p>
-      <p class="old-price">6,000원</p>
-      <button class="buy" onclick="addCart('구름 무늬 노트')">장바구니 담기 🛒</button>
+    <div class="card shape3">
+      <div class="emoji">🐟</div>
+      <p class="category">눈·피부</p>
+      <h4>반짝 피부 오메가3</h4>
+      <p class="old-price">29,000원</p>
+      <p class="price">19,900원</p>
+      <button class="btn" onclick="addCart('반짝 피부 오메가3')">장바구니 담기</button>
     </div>
 
-    <div class="card pen">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">26% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/highlighter?lock=13" alt="말랑 형광펜 5색">
-      <h3>말랑 형광펜 5색</h3>
-      <p class="price">5,900원</p>
-      <p class="old-price">8,000원</p>
-      <button class="buy" onclick="addCart('말랑 형광펜 5색')">장바구니 담기 🛒</button>
+    <div class="card">
+      <span class="best">BEST</span>
+      <div class="emoji">🦴</div>
+      <p class="category">튼튼 영양제</p>
+      <h4>튼튼 관절 영양제</h4>
+      <p class="old-price">32,000원</p>
+      <p class="price">21,900원</p>
+      <button class="btn" onclick="addCart('튼튼 관절 영양제')">장바구니 담기</button>
     </div>
 
-    <div class="card art">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">25% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/crayons?lock=14" alt="말랑 크레파스 12색">
-      <h3>말랑 크레파스 12색</h3>
-      <p class="price">6,000원</p>
-      <p class="old-price">8,000원</p>
-      <button class="buy" onclick="addCart('말랑 크레파스 12색')">장바구니 담기 🛒</button>
+    <div class="card">
+      <div class="emoji">😴</div>
+      <p class="category">마음 안정</p>
+      <h4>편안한 밤 진정츄</h4>
+      <p class="old-price">34,000원</p>
+      <p class="price">23,900원</p>
+      <button class="btn" onclick="addCart('편안한 밤 진정츄')">장바구니 담기</button>
     </div>
 
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">20% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/eraser?lock=15" alt="말랑 지우개 3개입">
-      <h3>말랑 지우개 3개입</h3>
-      <p class="price">2,400원</p>
-      <p class="old-price">3,000원</p>
-      <button class="buy" onclick="addCart('말랑 지우개 3개입')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card paper">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">15% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/paper?lock=16" alt="A4 복사지 500매">
-      <h3>A4 복사지 500매</h3>
-      <p class="price">4,250원</p>
-      <p class="old-price">5,000원</p>
-      <button class="buy" onclick="addCart('A4 복사지 500매')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">28% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/tape?lock=17" alt="스카치테이프 2개입">
-      <h3>스카치테이프 2개입</h3>
-      <p class="price">1,800원</p>
-      <p class="old-price">2,500원</p>
-      <button class="buy" onclick="addCart('스카치테이프 2개입')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card pen">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">22% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/pencil?lock=18" alt="샤프심 0.5mm 5통">
-      <h3>샤프심 0.5mm 5통</h3>
-      <p class="price">2,700원</p>
-      <p class="old-price">3,500원</p>
-      <button class="buy" onclick="addCart('샤프심 0.5mm 5통')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card pen">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">24% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/pen?lock=19" alt="파스텔 볼펜 5색">
-      <h3>파스텔 볼펜 5색</h3>
-      <p class="price">3,800원</p>
-      <p class="old-price">5,000원</p>
-      <button class="buy" onclick="addCart('파스텔 볼펜 5색')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card paper">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">18% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/diary?lock=20" alt="몽글 다이어리">
-      <h3>몽글 다이어리</h3>
-      <p class="price">9,800원</p>
-      <p class="old-price">12,000원</p>
-      <button class="buy" onclick="addCart('몽글 다이어리')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card paper">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">20% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/notepad?lock=21" alt="떡메모지 100매">
-      <h3>떡메모지 100매</h3>
-      <p class="price">2,800원</p>
-      <p class="old-price">3,500원</p>
-      <button class="buy" onclick="addCart('떡메모지 100매')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card art">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">27% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/watercolor?lock=22" alt="수채화 물감 12색">
-      <h3>수채화 물감 12색</h3>
-      <p class="price">8,000원</p>
-      <p class="old-price">11,000원</p>
-      <button class="buy" onclick="addCart('수채화 물감 12색')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card art">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">23% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/paintbrush?lock=23" alt="그림 붓 3종 세트">
-      <h3>그림 붓 3종 세트</h3>
-      <p class="price">4,600원</p>
-      <p class="old-price">6,000원</p>
-      <button class="buy" onclick="addCart('그림 붓 3종 세트')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">30% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/ruler?lock=24" alt="삼각자 3종 세트">
-      <h3>삼각자 3종 세트</h3>
-      <p class="price">2,100원</p>
-      <p class="old-price">3,000원</p>
-      <button class="buy" onclick="addCart('삼각자 3종 세트')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">25% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/scissors?lock=25" alt="안전 가위">
-      <h3>안전 가위</h3>
-      <p class="price">3,000원</p>
-      <p class="old-price">4,000원</p>
-      <button class="buy" onclick="addCart('안전 가위')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">21% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/paperclip?lock=26" alt="클립·집게 세트">
-      <h3>클립·집게 세트</h3>
-      <p class="price">1,900원</p>
-      <p class="old-price">2,400원</p>
-      <button class="buy" onclick="addCart('클립·집게 세트')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">26% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/bookmark?lock=27" alt="하트 책갈피 5개">
-      <h3>하트 책갈피 5개</h3>
-      <p class="price">2,200원</p>
-      <p class="old-price">3,000원</p>
-      <button class="buy" onclick="addCart('하트 책갈피 5개')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">19% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/pencilcase?lock=28" alt="곰돌이 필통">
-      <h3>곰돌이 필통</h3>
-      <p class="price">6,500원</p>
-      <p class="old-price">8,000원</p>
-      <button class="buy" onclick="addCart('곰돌이 필통')">장바구니 담기 🛒</button>
-    </div>
-
-    <div class="card etc">
-      <button class="wish" onclick="toggleWish(this)">♡</button>
-      <span class="badge">33% 할인</span>
-      <img class="photo" src="https://loremflickr.com/400/400/stickers?lock=29" alt="무지개 스티커 팩">
-      <h3>무지개 스티커 100장</h3>
-      <p class="price">2,000원</p>
-      <p class="old-price">3,000원</p>
-      <button class="buy" onclick="addCart('무지개 스티커 100장')">장바구니 담기 🛒</button>
+    <div class="card">
+      <div class="emoji">❤️</div>
+      <p class="category">튼튼 영양제</p>
+      <h4>튼튼 심장 코엔자임</h4>
+      <p class="old-price">38,000원</p>
+      <p class="price">26,900원</p>
+      <button class="btn" onclick="addCart('튼튼 심장 코엔자임')">장바구니 담기</button>
     </div>
 
   </div>
 
-  <!-- 찾는 상품이 없을 때 보이는 안내문 -->
-  <p class="no-result" id="noResult">
-    😢 찾으시는 상품이 없어요.<br>다른 이름으로 검색해 보세요!
-  </p>
-
-  <!-- 쇼핑몰 소개 -->
-  <div class="intro">
-    <h2>라떼 문구점을 소개합니다 💙</h2>
-
-    <div class="intro-list">
-      <div class="intro-box">
-        <div class="intro-emoji">📚</div>
-        <h3>청소년 공부에 필요한 용품</h3>
-        <p>중·고등학생이 실제로 많이 쓰는 물건만 골라 담았어요.</p>
-      </div>
-
-      <div class="intro-box">
-        <div class="intro-emoji">💝</div>
-        <h3>소장하고픈 예쁜 문구용품</h3>
-        <p>파스텔 색감과 귀여운 디자인으로 책상 위가 예뻐져요.</p>
-      </div>
-
-      <div class="intro-box">
-        <div class="intro-emoji">✨</div>
-        <h3>공부가 잘되는 문구용품</h3>
-        <p>손에 잘 맞고 오래 써도 편한 제품만 준비했어요.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 안내글 3개 -->
-  <div class="notice">
-    <div class="notice-box">
-      <h4>🚚 배송 안내</h4>
-      <p>3만원 이상 구매 시 무료 배송! 오후 2시 이전 주문은 당일 발송됩니다.</p>
-    </div>
-
-    <div class="notice-box">
-      <h4>🔄 교환 · 환불 안내</h4>
-      <p>받으신 날부터 7일 이내에 신청할 수 있어요. 사용한 제품은 어려워요.</p>
-    </div>
-
-    <div class="notice-box">
-      <h4>🎁 학생 할인 안내</h4>
-      <p>학생증을 인증하면 모든 상품을 5% 더 싸게 살 수 있어요.</p>
-    </div>
-  </div>
-
-  <!-- 맨 아래: 연락처 -->
+  <!-- 맨 아래: 연락처 안내 -->
   <footer>
-    <p>📞 010-1234-5678 &nbsp; | &nbsp; ✉️ latte@shop.com</p>
-    <p>© 2026 라떼 문구점</p>
+    <p>
+      📞 고객센터 1588-0000 (평일 10:00 ~ 18:00 / 점심 12:00 ~ 13:00)<br>
+      ✉️ help@healthpanda.com<br>
+      © 2026 건강판다. All rights reserved.
+    </p>
   </footer>
 
-  <!-- 신상품 알림 팝업 -->
-  <div class="popup" id="popup">
-    <div class="popup-box">
-      <div class="popup-emoji">🎉</div>
-      <h2>신상품 출시!</h2>
-      <p>
-        <b>무지개 스티커 100장</b>이 새로 들어왔어요.<br>
-        지금 <b>33% 할인</b> 중입니다 💗
-      </p>
-      <button class="popup-close" onclick="closePopup()">확인했어요</button>
-      <label class="popup-again">
-        <input type="checkbox" id="hideAgain"> 이 소식 다시 안 보기
-      </label>
-    </div>
-  </div>
-
   <script>
-    /* ★ 신상품을 새로 낼 때마다 이 숫자를 1 올려주세요. ★
-       숫자를 바꾸면 "다시 안 보기"를 눌렀던 손님에게도 팝업이 다시 뜹니다.
-       팝업 내용은 위 HTML의 <div class="popup"> 안을 고치면 됩니다. */
-    var newsNumber = 2;
-
-    // 페이지를 열면 팝업을 띄울지 정합니다.
-    function openPopup() {
-      var seen = localStorage.getItem("newsSeen");   // 전에 본 소식 번호
-
-      if (seen !== String(newsNumber)) {             // 처음 보는 소식이면
-        document.getElementById("popup").style.display = "flex";
-      }
+    // 배너 버튼을 누르면 알림창이 뜹니다
+    function showEvent() {
+      alert("🐼 건강판다 할인 행사 진행 중!\n인기 건강식품을 최대 35% 저렴하게 만나보세요.");
     }
 
-    // 확인 버튼을 누르면 팝업을 닫습니다.
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
+    // 장바구니에 담은 개수를 기억하는 상자
+    var cartCount = 0;
 
-      // "다시 안 보기"에 체크했으면 본 소식으로 기억해 둡니다.
-      if (document.getElementById("hideAgain").checked) {
-        localStorage.setItem("newsSeen", newsNumber);
-      }
-    }
-
-    openPopup();   // 페이지가 열릴 때 실행
-
-    // 배너 버튼을 누르면 찜한 상품만 보여줍니다.
-    function showWish() {
-      var cards = document.querySelectorAll(".card");
-      var found = 0;   // 찜한 상품 개수
-
-      for (var i = 0; i < cards.length; i++) {
-        var heart = cards[i].querySelector(".wish");
-
-        if (heart.classList.contains("on")) {
-          cards[i].style.display = "block";   // 찜한 상품만 보이기
-          found++;
-        } else {
-          cards[i].style.display = "none";
-        }
-      }
-
-      // 검색어를 지우고 카테고리 선택도 모두 풉니다.
-      document.getElementById("searchBox").value = "";
-      var buttons = document.querySelectorAll(".category button");
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove("on");
-      }
-
-      // 찜한 상품이 없으면 안내문을 보여줍니다.
-      var msg = document.getElementById("noResult");
-      if (found === 0) {
-        msg.innerHTML = "💗 아직 찜한 상품이 없어요.<br>하트를 눌러 마음에 드는 상품을 담아보세요!";
-        msg.style.display = "block";
-      } else {
-        msg.style.display = "none";
-      }
-
-      // 상품 목록으로 부드럽게 내려갑니다.
-      document.querySelector(".products").scrollIntoView({ behavior: "smooth" });
-    }
-
-    // 장바구니 버튼을 누르면 상품 이름이 나옵니다.
+    // 장바구니 버튼을 누르면 개수가 1 늘어나고 알림창이 뜹니다
     function addCart(name) {
-      alert(name + " 을(를) 장바구니에 담았어요! 🛒");
+      cartCount = cartCount + 1;
+
+      // 맨 위 장바구니 숫자를 새 값으로 바꿔줍니다
+      document.getElementById("cartCount").innerText = cartCount;
+
+      alert(name + " 을(를) 장바구니에 담았어요! 🛒\n지금까지 담은 상품: " + cartCount + "개");
     }
 
-    // 카테고리 버튼을 누르면 그 분류의 상품만 보입니다.
-    function showCategory(cat, btn) {
-      // 1) 모든 버튼을 흐리게 만든 뒤, 누른 버튼만 진하게 합니다.
-      var buttons = document.querySelectorAll(".category button");
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove("on");
-      }
-      btn.classList.add("on");
+    // ===== 할인율 자동 계산 =====
+    // 상품 카드를 하나씩 확인해서, 할인율을 가격 앞에 빨간색으로 넣습니다
+    var cards = document.querySelectorAll(".card");
 
-      // 2) 해당 분류의 상품만 보여줍니다.
-      var cards = document.querySelectorAll(".card");
-      for (var i = 0; i < cards.length; i++) {
-        if (cat === "all" || cards[i].classList.contains(cat)) {
-          cards[i].style.display = "block";   // 보이기
-        } else {
-          cards[i].style.display = "none";    // 숨기기
-        }
-      }
+    for (var i = 0; i < cards.length; i++) {
+      var oldBox = cards[i].querySelector(".old-price");  // 할인 전 가격
+      var newBox = cards[i].querySelector(".price");      // 지금 가격
 
-      // 3) 검색어와 안내문은 지웁니다.
-      document.getElementById("searchBox").value = "";
-      document.getElementById("noResult").style.display = "none";
+      // 글자에서 쉼표와 '원'을 지워서 숫자만 남깁니다
+      var oldPrice = Number(oldBox.innerText.replace(/,/g, "").replace("원", ""));
+      var newPrice = Number(newBox.innerText.replace(/,/g, "").replace("원", ""));
+
+      // 할인율 = (할인 전 - 지금) ÷ 할인 전 × 100, 소수점은 반올림
+      var rate = Math.round((oldPrice - newPrice) / oldPrice * 100);
+
+      // 가격 앞에 빨간 할인율을 붙입니다
+      newBox.innerHTML = '<span class="sale">' + rate + '%</span>' + newBox.innerText;
     }
 
-    // 검색창에 글자를 칠 때마다 실행됩니다.
-    function searchProduct() {
-      var word = document.getElementById("searchBox").value.trim().toLowerCase();
-      var cards = document.querySelectorAll(".card");
-      var found = 0;   // 찾은 상품 개수
-
-      for (var i = 0; i < cards.length; i++) {
-        var name = cards[i].querySelector("h3").textContent.toLowerCase();
-
-        if (name.indexOf(word) !== -1) {
-          cards[i].style.display = "block";   // 글자가 들어있으면 보이기
-          found++;
-        } else {
-          cards[i].style.display = "none";    // 없으면 숨기기
-        }
-      }
-
-      // 검색할 때는 카테고리를 '전체'로 되돌립니다.
-      var buttons = document.querySelectorAll(".category button");
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove("on");
-      }
-      document.querySelector(".cat-all").classList.add("on");
-
-      // 찾은 상품이 하나도 없으면 안내문을 보여줍니다.
-      var msg = document.getElementById("noResult");
-      if (found === 0) {
-        msg.innerHTML = "😢 찾으시는 상품이 없어요.<br>다른 이름으로 검색해 보세요!";
-        msg.style.display = "block";
-      } else {
-        msg.style.display = "none";
-      }
-    }
-
-    // 하트를 누르면 찜하기가 켜지고, 다시 누르면 풀립니다.
-    function toggleWish(btn) {
-      btn.classList.toggle("on");   // 켜져 있으면 끄고, 꺼져 있으면 켭니다
-
-      if (btn.classList.contains("on")) {
-        btn.textContent = "♥";      // 꽉 찬 하트
-      } else {
-        btn.textContent = "♡";      // 빈 하트
-      }
-
-      countWish();
-    }
-
-    // 찜한 상품이 몇 개인지 세어서 맨 위에 보여줍니다.
-    function countWish() {
-      var n = document.querySelectorAll(".wish.on").length;
-      document.getElementById("wishCount").textContent = n;
-    }
   </script>
 
 </body>
