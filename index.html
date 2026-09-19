@@ -580,11 +580,13 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* 제목 오른쪽 버튼 두 개 */
+    /* 제목 오른쪽 버튼들 */
     .head-btns {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;            /* 화면이 좁으면 아래로 내려감 */
+      gap: 6px 10px;
     }
 
     /* 전체 비우기 글씨 버튼 */
@@ -1150,6 +1152,7 @@
       <div class="basket-head">
         <h3 id="basketTitle">장바구니 <span class="count-pill"><span id="basketCount">0</span>개</span></h3>
         <div class="head-btns">
+          <button class="clear-btn" id="saveCartBtn" onclick="saveCart(true)">💾 저장</button>
           <button class="clear-btn" id="loadCartBtn" onclick="loadCart(true)">⟳ 불러오기</button>
           <button class="clear-btn" onclick="clearCart()">전체 비우기</button>
           <button class="close-btn" onclick="closeCart()" aria-label="장바구니 닫기">✕</button>
@@ -1558,8 +1561,15 @@
     // ===== 장바구니를 슈퍼베이스에 저장하고 불러오기 =====
     // 로그인한 사람만 저장됩니다. 로그인 전에는 화면에만 담깁니다.
 
-    function saveCart() {
-      if (!db || !user) return;
+    // 담은 상품을 슈퍼베이스에 올립니다.
+    // tell 이 true 면 결과를 창 안에 글로 알려줍니다 (저장 버튼을 눌렀을 때)
+    function saveCart(tell) {
+      if (!db || !user) {
+        if (tell) showSync("로그인하셔야 장바구니를 저장할 수 있어요.", false);
+        return;
+      }
+
+      if (tell) showSync("저장하는 중이에요…", false);
 
       db.from("carts").upsert({
         user_id: user.id,
@@ -1568,6 +1578,19 @@
       }).then(function (result) {
         if (result.error) {
           console.log("장바구니 저장 실패:", result.error);
+          if (tell) showSync("😢 저장하지 못했어요. 잠시 뒤 다시 눌러주세요.", false);
+          return;
+        }
+
+        if (tell) {
+          var count = 0;
+          for (var i = 0; i < cart.length; i++) { count = count + cart[i].count; }
+
+          if (count === 0) {
+            showSync("빈 장바구니로 저장했어요.", true);
+          } else {
+            showSync(count + "개를 장바구니에 저장했어요. 🐼", true);
+          }
         }
       });
     }
@@ -1803,13 +1826,16 @@
       document.getElementById("cartCount").innerText   = count;
       document.getElementById("basketCount").innerText = count;
 
-      // 저장 상태 안내와 불러오기 버튼 (로그인했을 때만 버튼이 보입니다)
+      // 저장 상태 안내와 저장·불러오기 버튼 (로그인했을 때만 버튼이 보입니다)
+      var saveBtn = document.getElementById("saveCartBtn");
       var loadBtn = document.getElementById("loadCartBtn");
 
       if (user) {
+        saveBtn.style.display = "";
         loadBtn.style.display = "";
         showSync("🔒 담으실 때마다 " + userName() + " 님 장바구니에 자동 저장돼요.", false);
       } else {
+        saveBtn.style.display = "none";
         loadBtn.style.display = "none";
         showSync("로그인하시면 장바구니가 저장되어 다음에도 이어서 담으실 수 있어요.", false);
       }
