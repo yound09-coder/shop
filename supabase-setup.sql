@@ -67,20 +67,26 @@ create policy "anyone can read products"
 
 
 -- ============================================
---  3. 상품 7개 넣기
+--  3. 상품 넣기
 --     이름이 같으면 새 값으로 덮어씁니다
 -- ============================================
 
 insert into public.products
   (sort_order, name, category, price, old_price, photo, is_best, card_style)
 values
-  (1, '치석 케어 덴탈츄',   '치아 건강',   12900, 19000, 'images/dental.svg',     false, null),
-  (2, '편안한 장 유산균',   '장 건강',     16900, 25000, 'images/probiotics.svg', false, null),
-  (3, '맑은 눈 루테인',     '눈·피부',     18900, 28000, 'images/lutein.svg',     true,  'shape2'),
-  (4, '반짝 피부 오메가3',  '눈·피부',     19900, 29000, 'images/omega3.svg',     false, 'shape3'),
-  (5, '튼튼 관절 영양제',   '튼튼 영양제', 21900, 32000, 'images/joint.svg',      true,  null),
-  (6, '편안한 밤 진정츄',   '마음 안정',   23900, 34000, 'images/calm.svg',       false, null),
-  (7, '튼튼 심장 코엔자임', '튼튼 영양제', 26900, 38000, 'images/heart.svg',      false, null)
+  (1,  '치석 케어 덴탈츄',      '치아 건강',   12900, 19000, 'images/dental.svg',     false, null),
+  (2,  '편안한 장 유산균',      '장 건강',     16900, 25000, 'images/probiotics.svg', false, null),
+  (3,  '맑은 눈 루테인',        '눈·피부',     18900, 28000, 'images/lutein.svg',     true,  'shape2'),
+  (4,  '반짝 피부 오메가3',     '눈·피부',     19900, 29000, 'images/omega3.svg',     false, 'shape3'),
+  (5,  '튼튼 관절 영양제',      '튼튼 영양제', 21900, 32000, 'images/joint.svg',      true,  null),
+  (6,  '편안한 밤 진정츄',      '마음 안정',   23900, 34000, 'images/calm.svg',       false, null),
+  (7,  '튼튼 심장 코엔자임',    '튼튼 영양제', 26900, 38000, 'images/heart.svg',      false, null),
+  (8,  '잇몸 케어 치약츄',      '치아 건강',   10900, 16000, 'images/gum.svg',        false, null),
+  (9,  '든든한 식이섬유',       '장 건강',     14900, 22000, 'images/fiber.svg',      false, null),
+  (10, '촉촉 피부 세라마이드',  '눈·피부',     20900, 31000, 'images/skin.svg',       false, null),
+  (11, '맑은 간 밀크씨슬',      '튼튼 영양제', 23900, 35000, 'images/liver.svg',      true,  null),
+  (12, '하루 한 알 종합비타민', '튼튼 영양제', 18900, 27000, 'images/multi.svg',      true,  null),
+  (13, '혼자서도 괜찮아 츄',    '마음 안정',   17900, 26000, 'images/alone.svg',      false, null)
 on conflict (name) do update set
   sort_order = excluded.sort_order,
   category   = excluded.category,
@@ -92,7 +98,40 @@ on conflict (name) do update set
 
 
 -- ============================================
+--  4. 장바구니 표 (회원 한 사람당 한 줄)
+-- ============================================
+
+create table if not exists public.carts (
+  user_id     uuid primary key references auth.users(id) on delete cascade,
+  updated_at  timestamptz not null default now(),
+  items       jsonb       not null default '[]'::jsonb   -- 담은 상품 목록
+);
+
+alter table public.carts enable row level security;
+
+-- 규칙: 로그인한 사람은 "자기 장바구니만" 읽고 쓸 수 있습니다
+--   auth.uid() = 지금 로그인한 사람의 번호
+drop policy if exists "read own cart"   on public.carts;
+drop policy if exists "insert own cart" on public.carts;
+drop policy if exists "update own cart" on public.carts;
+drop policy if exists "delete own cart" on public.carts;
+
+create policy "read own cart"   on public.carts for select to authenticated
+  using (auth.uid() = user_id);
+
+create policy "insert own cart" on public.carts for insert to authenticated
+  with check (auth.uid() = user_id);
+
+create policy "update own cart" on public.carts for update to authenticated
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create policy "delete own cart" on public.carts for delete to authenticated
+  using (auth.uid() = user_id);
+
+
+-- ============================================
 --  확인용
 -- ============================================
 -- select * from public.products order by sort_order;
 -- select * from public.orders   order by id desc;
+-- select * from public.carts;

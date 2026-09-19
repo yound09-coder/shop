@@ -1503,11 +1503,19 @@
       db.auth.getSession().then(function (result) {
         user = result.data.session ? result.data.session.user : null;
         drawUser();
+        loadCart();     // 저장해 둔 장바구니 되살리기
       });
 
       db.auth.onAuthStateChange(function (event, session) {
         user = session ? session.user : null;
         drawUser();
+
+        if (user) {
+          loadCart();   // 로그인하면 저장해 둔 장바구니를 가져옵니다
+        } else {
+          cart = [];    // 로그아웃하면 화면의 장바구니를 비웁니다
+          drawCart();
+        }
       });
     }
 
@@ -1523,6 +1531,41 @@
 
     var FREE_SHIP = 30000;   // 이 금액부터 배송비 무료
     var SHIP_FEE  = 3000;    // 무료가 아닐 때의 배송비
+
+    // ===== 장바구니를 슈퍼베이스에 저장하고 불러오기 =====
+    // 로그인한 사람만 저장됩니다. 로그인 전에는 화면에만 담깁니다.
+
+    function saveCart() {
+      if (!db || !user) return;
+
+      db.from("carts").upsert({
+        user_id: user.id,
+        items: cart,
+        updated_at: new Date().toISOString()
+      }).then(function (result) {
+        if (result.error) {
+          console.log("장바구니 저장 실패:", result.error);
+        }
+      });
+    }
+
+    function loadCart() {
+      if (!db || !user) return;
+
+      db.from("carts").select("items").eq("user_id", user.id).maybeSingle()
+        .then(function (result) {
+          if (result.error) {
+            console.log("장바구니 불러오기 실패:", result.error);
+            return;
+          }
+
+          // 저장해 둔 장바구니가 있으면 그대로 되살립니다
+          if (result.data && result.data.items) {
+            cart = result.data.items;
+            drawCart();
+          }
+        });
+    }
 
     // ===== 장바구니 창 열고 닫기 =====
     function openCart() {
@@ -1571,6 +1614,7 @@
       }
 
       drawCart();
+      saveCart();
       openCart();     // 담자마자 장바구니 창을 보여줍니다
     }
 
@@ -1597,6 +1641,7 @@
       }
 
       drawCart();
+      saveCart();
     }
 
     // 상품 한 줄을 장바구니에서 지웁니다
@@ -1611,6 +1656,7 @@
 
       cart = left;
       drawCart();
+      saveCart();
     }
 
     // 장바구니를 통째로 비웁니다
@@ -1620,6 +1666,7 @@
       if (confirm("담으신 상품을 모두 비울까요?")) {
         cart = [];
         drawCart();
+        saveCart();
       }
     }
 
@@ -1765,6 +1812,7 @@
         // 저장에 성공하면 장바구니를 비웁니다
         cart = [];
         drawCart();
+        saveCart();
         closeCart();
 
         alert("🐼 주문해 주셔서 고맙습니다!\n주문번호: " + orderNo + "\n\n주문 내역이 저장되었어요.");
