@@ -620,6 +620,25 @@
       transform: rotate(90deg);    /* 누르려 하면 살짝 돌아갑니다 */
     }
 
+    /* 저장 상태 안내 줄 */
+    .sync-note {
+      flex: none;
+      font-size: 14px;
+      color: #9C8878;
+      text-align: center;
+      background-color: #FFF8F2;
+      border-bottom: 1px solid #F3E4D6;
+      padding: 9px 20px;
+      margin: 0;
+    }
+
+    /* 불러온 직후에는 초록색으로 잠깐 알려줍니다 */
+    .sync-note.ok {
+      background-color: #EEF7EA;
+      color: #3F7A2E;
+      font-weight: bold;
+    }
+
     /* 담은 상품 목록만 따로 스크롤됩니다 */
     .basket-body {
       flex: 1;
@@ -1131,10 +1150,14 @@
       <div class="basket-head">
         <h3 id="basketTitle">장바구니 <span class="count-pill"><span id="basketCount">0</span>개</span></h3>
         <div class="head-btns">
+          <button class="clear-btn" id="loadCartBtn" onclick="loadCart(true)">⟳ 불러오기</button>
           <button class="clear-btn" onclick="clearCart()">전체 비우기</button>
           <button class="close-btn" onclick="closeCart()" aria-label="장바구니 닫기">✕</button>
         </div>
       </div>
+
+      <!-- 저장 상태 안내 -->
+      <p class="sync-note" id="syncNote"></p>
 
       <!-- 담은 상품이 여기에 한 줄씩 쌓입니다 -->
       <div class="basket-body">
@@ -1549,22 +1572,48 @@
       });
     }
 
-    function loadCart() {
-      if (!db || !user) return;
+    // 저장해 둔 장바구니를 가져옵니다.
+    // tell 이 true 면 결과를 창 안에 글로 알려줍니다 (불러오기 버튼을 눌렀을 때)
+    function loadCart(tell) {
+      if (!db || !user) {
+        if (tell) showSync("로그인하셔야 저장된 장바구니를 가져올 수 있어요.", false);
+        return;
+      }
 
-      db.from("carts").select("items").eq("user_id", user.id).maybeSingle()
+      if (tell) showSync("불러오는 중이에요…", false);
+
+      db.from("carts").select("items, updated_at").eq("user_id", user.id).maybeSingle()
         .then(function (result) {
           if (result.error) {
             console.log("장바구니 불러오기 실패:", result.error);
+            if (tell) showSync("😢 불러오지 못했어요. 잠시 뒤 다시 눌러주세요.", false);
             return;
           }
 
-          // 저장해 둔 장바구니가 있으면 그대로 되살립니다
-          if (result.data && result.data.items) {
-            cart = result.data.items;
-            drawCart();
+          // 저장해 둔 것이 없을 때
+          if (!result.data || !result.data.items || result.data.items.length === 0) {
+            if (tell) showSync("저장된 장바구니가 없어요.", false);
+            return;
+          }
+
+          // 저장해 둔 장바구니를 그대로 되살립니다
+          cart = result.data.items;
+          drawCart();
+
+          if (tell) {
+            var count = 0;
+            for (var i = 0; i < cart.length; i++) { count = count + cart[i].count; }
+            showSync("저장해 두신 " + count + "개를 불러왔어요. 🐼", true);
           }
         });
+    }
+
+    // 창 안 안내 글을 바꿉니다 (good 이 true 면 초록색)
+    function showSync(text, good) {
+      var box = document.getElementById("syncNote");
+
+      box.innerText = text;
+      box.className = good ? "sync-note ok" : "sync-note";
     }
 
     // ===== 장바구니 창 열고 닫기 =====
@@ -1753,6 +1802,17 @@
       // 맨 위와 장바구니 제목의 숫자를 새 값으로 바꿔줍니다
       document.getElementById("cartCount").innerText   = count;
       document.getElementById("basketCount").innerText = count;
+
+      // 저장 상태 안내와 불러오기 버튼 (로그인했을 때만 버튼이 보입니다)
+      var loadBtn = document.getElementById("loadCartBtn");
+
+      if (user) {
+        loadBtn.style.display = "";
+        showSync("🔒 담으실 때마다 " + userName() + " 님 장바구니에 자동 저장돼요.", false);
+      } else {
+        loadBtn.style.display = "none";
+        showSync("로그인하시면 장바구니가 저장되어 다음에도 이어서 담으실 수 있어요.", false);
+      }
     }
 
     // ===== 주문하기 =====
