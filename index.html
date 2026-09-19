@@ -34,17 +34,22 @@
       font-size: 19px;
     }
 
-    /* 맨 위 장바구니 표시 */
+    /* 맨 위 장바구니 버튼 (누르면 장바구니 창이 열립니다) */
     .cart {
       display: inline-block;
       background-color: white;
+      border: none;
       color: #B35B1F;
+      font-family: inherit;
       font-size: 18px;
       font-weight: bold;
       border-radius: 999px;
       padding: 8px 22px;
       margin: 16px 0 0 0;
+      cursor: pointer;
     }
+
+    .cart:hover { background-color: #FBE5D2; }
 
     /* ===== 메뉴 4개 ===== */
     nav {
@@ -241,6 +246,407 @@
       font-weight: bold;
     }
 
+    /* ===== 장바구니 모달 ===== */
+    /* 화면 전체를 덮는 어두운 막 (평소에는 숨어 있습니다) */
+    .modal-back {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(48, 32, 20, 0.5);
+      backdrop-filter: blur(6px);        /* 뒤 배경을 뿌옇게 */
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 50;
+      display: none;              /* 평소에는 숨겨둠 */
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* open 이 붙으면 화면에 나타납니다 */
+    .modal-back.open {
+      display: flex;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* 창이 아래에서 살짝 떠오르며 커집니다 */
+    @keyframes popUp {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* 가운데 뜨는 하얀 창 */
+    .basket {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      max-height: 88vh;           /* 화면보다 길어지지 않게 */
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;           /* 둥근 모서리 밖으로 넘치지 않게 */
+      background-color: #FFFDFB;
+      border-radius: 28px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,   /* 윗면에 얇은 빛 */
+        0 32px 70px rgba(70, 38, 14, 0.38),
+        0 4px 14px rgba(70, 38, 14, 0.18);
+      animation: popUp 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* 창 맨 위의 얇은 주황 띠 */
+    .basket::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #F5A85C, #F08A3C, #E56A15);
+    }
+
+    /* 장바구니 제목 줄 */
+    .basket-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background-color: #FFFDFB;
+      border-bottom: 1px solid #F3E4D6;
+      padding: 26px 28px 20px 28px;
+    }
+
+    .basket-head h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 23px;
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+
+    /* 제목 옆 개수 알약 */
+    .count-pill {
+      background-color: #FBE5D2;
+      color: #B35B1F;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 999px;
+      padding: 3px 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 제목 오른쪽 버튼 두 개 */
+    .head-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 전체 비우기 글씨 버튼 */
+    .clear-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      color: #9C8878;
+      cursor: pointer;
+      padding: 6px 2px;
+      transition: 0.15s;
+    }
+
+    .clear-btn:hover { color: #E03B1C; }
+
+    /* 창 닫기 버튼 */
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      background-color: #FBF3EB;
+      border: none;
+      border-radius: 999px;
+      font-size: 16px;
+      color: #B35B1F;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+
+    .close-btn:hover {
+      background-color: #F08A3C;
+      color: white;
+      transform: rotate(90deg);    /* 누르려 하면 살짝 돌아갑니다 */
+    }
+
+    /* 담은 상품 목록만 따로 스크롤됩니다 */
+    .basket-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;              /* 스크롤이 제대로 생기도록 */
+      padding: 0 28px;
+    }
+
+    /* 스크롤 막대를 가늘고 연하게 */
+    .basket-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .basket-body::-webkit-scrollbar-thumb {
+      background-color: #EBD9C8;
+      border-radius: 999px;
+    }
+
+    /* 담은 상품이 없을 때 */
+    .basket-empty {
+      text-align: center;
+      font-size: 17px;
+      color: #9C8878;
+      line-height: 1.8;
+      padding: 56px 20px;
+      margin: 0;
+    }
+
+    .basket-empty .big {
+      display: block;
+      font-size: 54px;
+      opacity: 0.55;
+      margin: 0 0 14px 0;
+    }
+
+    /* 담은 상품 한 줄 */
+    .basket-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;            /* 화면이 좁으면 아래로 접힘 */
+      gap: 10px 14px;
+      border-bottom: 1px solid #F6ECE2;
+      padding: 18px 8px;
+      margin: 0 -8px;
+      border-radius: 14px;
+      transition: 0.15s;
+      animation: rowIn 0.25s ease-out;
+    }
+
+    /* 새 줄이 스르륵 나타납니다 */
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .basket-row:hover { background-color: #FFF8F2; }
+
+    .basket-row:last-child { border-bottom: none; }
+
+    /* 줄 왼쪽 작은 그림 */
+    .thumb-sm {
+      flex: none;
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #FFF8F2, #FBE5D2);
+      border: 1px solid #F6E3D2;
+      border-radius: 16px;
+      font-size: 28px;
+    }
+
+    /* 상품명과 가격을 한 줄에 나란히 */
+    .basket-name {
+      flex: 1;                    /* 남는 자리를 모두 차지 */
+      min-width: 140px;
+      display: flex;
+      align-items: baseline;      /* 글씨 아랫선을 맞춰줍니다 */
+      flex-wrap: wrap;
+      gap: 2px 10px;
+    }
+
+    .basket-name strong {
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .basket-name span {
+      font-size: 14px;
+      color: #9C8878;
+      white-space: nowrap;
+    }
+
+    /* 개수 조절 버튼 묶음 */
+    .qty {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background-color: #FBF3EB;
+      border: 1px solid #F3E4D6;
+      border-radius: 999px;
+      padding: 4px;
+    }
+
+    .qty button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 999px;
+      background-color: white;
+      color: #B35B1F;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(150, 90, 40, 0.15);
+      transition: 0.15s;
+    }
+
+    .qty button:hover {
+      background-color: #F08A3C;
+      color: white;
+      box-shadow: 0 3px 8px rgba(224, 106, 21, 0.35);
+    }
+
+    .qty button:active { transform: scale(0.92); }
+
+    .qty span {
+      min-width: 30px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;   /* 숫자 폭을 고정해 덜 흔들리게 */
+    }
+
+    /* 줄별 합계 금액 */
+    .basket-sum {
+      flex: none;
+      min-width: 98px;
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: -0.3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 줄 오른쪽 끝 빼기 버튼 */
+    .del-btn {
+      flex: none;
+      background-color: white;
+      border: 1px solid #EFDFD0;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      color: #9C8878;
+      cursor: pointer;
+      padding: 8px 16px;
+      white-space: nowrap;
+      transition: 0.15s;
+    }
+
+    .del-btn:hover {
+      background-color: #E03B1C;
+      border-color: #E03B1C;
+      color: white;
+      box-shadow: 0 3px 10px rgba(224, 59, 28, 0.3);
+    }
+
+    /* 합계가 들어가는 아래 칸 (창 바닥에 고정) */
+    .basket-total {
+      background-color: #FFF8F2;
+      border-top: 1px solid #F3E4D6;
+      padding: 22px 28px 26px 28px;
+    }
+
+    /* 합계 계산 줄 */
+    .basket-total p {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 16px;
+      color: #7A6757;
+      margin: 10px 0 0 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .basket-total p:first-child { margin-top: 0; }
+
+    /* 마지막 결제 금액 줄 */
+    .basket-total .final {
+      border-top: 1px dashed #E5D2C0;
+      padding: 16px 0 0 0;
+      margin: 16px 0 0 0;
+      font-size: 21px;
+      font-weight: bold;
+      color: #4A3B32;
+      letter-spacing: -0.5px;
+    }
+
+    .basket-total .final b { color: #E56A15; }
+
+    /* ===== 무료배송까지 남은 금액 ===== */
+    .ship-note {
+      display: block;            /* 위 합계 줄과 달리 한 덩어리로 */
+      color: #B35B1F;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      margin: 18px 0 0 0;
+    }
+
+    /* 얼마나 채웠는지 보여주는 가느다란 막대 */
+    .ship-bar {
+      height: 7px;
+      background-color: #F3E4D6;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0 0 0;
+    }
+
+    .ship-bar i {
+      display: block;
+      height: 100%;
+      width: 0;                  /* 실제 값은 자바스크립트가 채웁니다 */
+      border-radius: 999px;
+      background: linear-gradient(90deg, #F5A85C, #E56A15);
+      transition: width 0.45s ease-out;
+    }
+
+    /* 조건을 다 채우면 초록색으로 바뀝니다 */
+    .ship-bar.done i { background: linear-gradient(90deg, #7FB069, #4E8B3A); }
+
+    /* 주문하기 버튼 */
+    .order-btn {
+      width: 100%;
+      margin: 20px 0 0 0;
+      background: linear-gradient(180deg, #F5A85C, #E56A15);
+      box-shadow: 0 8px 20px rgba(224, 106, 21, 0.35);
+      letter-spacing: 0.5px;
+      transition: 0.18s;
+    }
+
+    .order-btn:hover {
+      background: linear-gradient(180deg, #F08A3C, #C85A0F);
+      box-shadow: 0 12px 26px rgba(224, 106, 21, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .order-btn:active { transform: translateY(0); }
+
+    /* 휴대폰에서는 아래에서 올라오는 창으로 보여줍니다 */
+    @media (max-width: 600px) {
+      .modal-back { padding: 0; align-items: flex-end; }
+
+      .basket {
+        max-width: none;
+        max-height: 92vh;
+        border-radius: 26px 26px 0 0;   /* 위쪽만 둥글게 */
+      }
+
+      .basket-head   { padding: 22px 20px 16px 20px; }
+      .basket-body   { padding: 0 20px; }
+      .basket-total  { padding: 18px 20px 22px 20px; }
+      .basket-sum    { flex: 1; min-width: 0; text-align: left; }
+    }
+
     /* ===== 쇼핑몰 소개 영역 ===== */
     .about {
       background-color: #FFF8F2;   /* 밝은 크림색으로 구분 */
@@ -336,7 +742,7 @@
   <header>
     <h1>🐼 건강판다</h1>
     <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
-    <p class="cart">🛒 장바구니 <span id="cartCount">0</span>개</p>
+    <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
   </header>
 
   <!-- 메뉴 4개 -->
@@ -374,7 +780,7 @@
       <h4>치석 케어 덴탈츄</h4>
       <p class="old-price">19,000원</p>
       <p class="price">12,900원</p>
-      <button class="btn" onclick="addCart('치석 케어 덴탈츄')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card">
@@ -384,7 +790,7 @@
       <h4>편안한 장 유산균</h4>
       <p class="old-price">25,000원</p>
       <p class="price">16,900원</p>
-      <button class="btn" onclick="addCart('편안한 장 유산균')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card shape2">
@@ -395,7 +801,7 @@
       <h4>맑은 눈 루테인</h4>
       <p class="old-price">28,000원</p>
       <p class="price">18,900원</p>
-      <button class="btn" onclick="addCart('맑은 눈 루테인')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card shape3">
@@ -405,7 +811,7 @@
       <h4>반짝 피부 오메가3</h4>
       <p class="old-price">29,000원</p>
       <p class="price">19,900원</p>
-      <button class="btn" onclick="addCart('반짝 피부 오메가3')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card">
@@ -416,7 +822,7 @@
       <h4>튼튼 관절 영양제</h4>
       <p class="old-price">32,000원</p>
       <p class="price">21,900원</p>
-      <button class="btn" onclick="addCart('튼튼 관절 영양제')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card">
@@ -426,7 +832,7 @@
       <h4>편안한 밤 진정츄</h4>
       <p class="old-price">34,000원</p>
       <p class="price">23,900원</p>
-      <button class="btn" onclick="addCart('편안한 밤 진정츄')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
     <div class="card">
@@ -436,13 +842,47 @@
       <h4>튼튼 심장 코엔자임</h4>
       <p class="old-price">38,000원</p>
       <p class="price">26,900원</p>
-      <button class="btn" onclick="addCart('튼튼 심장 코엔자임')">장바구니 담기</button>
+      <button class="btn" onclick="addCart(this)">장바구니 담기</button>
     </div>
 
   </div>
 
   <!-- 검색 결과가 없을 때 -->
   <p class="no-result" id="noResult">😢 찾으시는 상품이 없어요.<br>다른 이름으로 검색해 보세요.</p>
+
+  <!-- 장바구니 모달 (평소에는 숨어 있다가 장바구니를 누르면 나타납니다) -->
+  <div class="modal-back" id="cartModal" onclick="backdropClose(event)">
+    <div class="basket" role="dialog" aria-modal="true" aria-labelledby="basketTitle">
+
+      <div class="basket-head">
+        <h3 id="basketTitle">장바구니 <span class="count-pill"><span id="basketCount">0</span>개</span></h3>
+        <div class="head-btns">
+          <button class="clear-btn" onclick="clearCart()">전체 비우기</button>
+          <button class="close-btn" onclick="closeCart()" aria-label="장바구니 닫기">✕</button>
+        </div>
+      </div>
+
+      <!-- 담은 상품이 여기에 한 줄씩 쌓입니다 -->
+      <div class="basket-body">
+        <div id="basketList"></div>
+      </div>
+
+      <!-- 합계 (담은 상품이 있을 때만 보입니다) -->
+      <div class="basket-total" id="basketTotal" style="display: none;">
+        <p>상품 금액 <span id="sumGoods">0원</span></p>
+        <p>배송비 <span id="sumShip">0원</span></p>
+        <p class="final">결제 예상 금액 <b id="sumFinal">0원</b></p>
+
+        <p class="ship-note" id="shipNote">3만원 이상 담으시면 배송비가 무료예요.</p>
+
+        <!-- 무료배송까지 얼마나 채웠는지 보여주는 막대 -->
+        <div class="ship-bar" id="shipBar"><i id="shipFill"></i></div>
+
+        <button class="btn order-btn" onclick="order()">주문하기</button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- 쇼핑몰 소개 -->
   <div class="about">
@@ -506,17 +946,198 @@
       alert("🐼 건강판다 할인 행사 진행 중!\n인기 건강식품을 최대 35% 저렴하게 만나보세요.");
     }
 
-    // 장바구니에 담은 개수를 기억하는 상자
-    var cartCount = 0;
+    // ===== 장바구니 =====
+    // 담은 상품을 기억하는 목록입니다.
+    // 한 칸에 { 이름, 그림, 가격, 개수 } 가 들어갑니다.
+    var cart = [];
 
-    // 장바구니 버튼을 누르면 개수가 1 늘어나고 알림창이 뜹니다
-    function addCart(name) {
-      cartCount = cartCount + 1;
+    var FREE_SHIP = 30000;   // 이 금액부터 배송비 무료
+    var SHIP_FEE  = 3000;    // 무료가 아닐 때의 배송비
 
-      // 맨 위 장바구니 숫자를 새 값으로 바꿔줍니다
-      document.getElementById("cartCount").innerText = cartCount;
+    // ===== 장바구니 창 열고 닫기 =====
+    function openCart() {
+      document.getElementById("cartModal").classList.add("open");
+      document.body.style.overflow = "hidden";   // 뒤쪽 페이지는 스크롤되지 않게
+    }
 
-      alert(name + " 을(를) 장바구니에 담았어요! 🛒\n지금까지 담은 상품: " + cartCount + "개");
+    function closeCart() {
+      document.getElementById("cartModal").classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    // 창 바깥의 어두운 곳을 누르면 닫힙니다
+    function backdropClose(event) {
+      if (event.target.id === "cartModal") {
+        closeCart();
+      }
+    }
+
+    // 키보드 Esc 를 눌러도 닫힙니다
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeCart();
+      }
+    });
+
+    // 담기 버튼을 누르면 그 카드의 상품이 장바구니에 들어갑니다
+    function addCart(button) {
+      var card = button.closest(".card");
+
+      var name  = card.dataset.name;
+      var emoji = card.dataset.emoji;
+      var price = Number(card.dataset.price);
+
+      // 이미 담은 상품이면 줄을 늘리지 않고 개수만 1 늘립니다
+      var found = findInCart(name);
+
+      if (found) {
+        found.count = found.count + 1;
+      } else {
+        cart.push({ name: name, emoji: emoji, price: price, count: 1 });
+      }
+
+      drawCart();
+      openCart();     // 담자마자 장바구니 창을 보여줍니다
+    }
+
+    // 장바구니에서 이름이 같은 상품을 찾아줍니다 (없으면 null)
+    function findInCart(name) {
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].name === name) {
+          return cart[i];
+        }
+      }
+      return null;
+    }
+
+    // 개수를 늘리거나 줄입니다 (0이 되면 목록에서 빼줍니다)
+    function changeCount(name, step) {
+      var item = findInCart(name);
+      if (!item) return;
+
+      item.count = item.count + step;
+
+      if (item.count <= 0) {
+        removeItem(name);
+        return;
+      }
+
+      drawCart();
+    }
+
+    // 상품 한 줄을 장바구니에서 지웁니다
+    function removeItem(name) {
+      var left = [];
+
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].name !== name) {
+          left.push(cart[i]);
+        }
+      }
+
+      cart = left;
+      drawCart();
+    }
+
+    // 장바구니를 통째로 비웁니다
+    function clearCart() {
+      if (cart.length === 0) return;
+
+      if (confirm("담으신 상품을 모두 비울까요?")) {
+        cart = [];
+        drawCart();
+      }
+    }
+
+    // 숫자를 12,900원 모양으로 바꿔줍니다
+    function won(number) {
+      return number.toLocaleString("ko-KR") + "원";
+    }
+
+    // ===== 장바구니 화면 그리기 =====
+    // 목록이 바뀔 때마다 이 함수가 처음부터 다시 그립니다
+    function drawCart() {
+      var list  = document.getElementById("basketList");
+      var total = document.getElementById("basketTotal");
+
+      var goods = 0;   // 상품 금액 합계
+      var count = 0;   // 담은 개수 합계
+      var html  = "";
+
+      for (var i = 0; i < cart.length; i++) {
+        var item = cart[i];
+
+        goods = goods + item.price * item.count;
+        count = count + item.count;
+
+        html = html +
+          '<div class="basket-row">' +
+            '<div class="thumb-sm">' + item.emoji + '</div>' +
+            '<div class="basket-name">' +
+              '<strong>' + item.name + '</strong>' +
+              '<span>' + won(item.price) + ' / 개</span>' +
+            '</div>' +
+            '<div class="qty">' +
+              '<button onclick="changeCount(\'' + item.name + '\', -1)">−</button>' +
+              '<span>' + item.count + '</span>' +
+              '<button onclick="changeCount(\'' + item.name + '\', 1)">+</button>' +
+            '</div>' +
+            '<div class="basket-sum">' + won(item.price * item.count) + '</div>' +
+            '<button class="del-btn" onclick="removeItem(\'' + item.name + '\')">빼기</button>' +
+          '</div>';
+      }
+
+      // 담은 상품이 하나도 없으면 안내문만 보여줍니다
+      if (cart.length === 0) {
+        list.innerHTML =
+          '<p class="basket-empty">' +
+            '<span class="big">🐼</span>' +
+            '아직 담으신 상품이 없어요.<br>' +
+            '마음에 드는 상품의 장바구니 담기 버튼을 눌러보세요.' +
+          '</p>';
+        total.style.display = "none";
+      } else {
+        list.innerHTML = html;
+        total.style.display = "block";
+      }
+
+      // 배송비: 3만원 이상이면 무료
+      var ship = (goods >= FREE_SHIP || goods === 0) ? 0 : SHIP_FEE;
+      var left = FREE_SHIP - goods;
+
+      document.getElementById("sumGoods").innerText = won(goods);
+      document.getElementById("sumShip").innerText  = (ship === 0) ? "무료" : won(ship);
+      document.getElementById("sumFinal").innerText = won(goods + ship);
+
+      // 무료배송까지 얼마가 남았는지 알려줍니다
+      if (left > 0) {
+        document.getElementById("shipNote").innerText =
+          won(left) + "만 더 담으시면 배송비가 무료예요.";
+      } else {
+        document.getElementById("shipNote").innerText =
+          "무료배송 조건을 채우셨어요. 편하게 받아보세요. 🚚";
+      }
+
+      // 막대를 얼마나 채울지 정합니다 (최대 100%)
+      var percent = Math.min(goods / FREE_SHIP * 100, 100);
+
+      document.getElementById("shipFill").style.width = percent + "%";
+
+      if (percent >= 100) {
+        document.getElementById("shipBar").classList.add("done");
+      } else {
+        document.getElementById("shipBar").classList.remove("done");
+      }
+
+      // 맨 위와 장바구니 제목의 숫자를 새 값으로 바꿔줍니다
+      document.getElementById("cartCount").innerText   = count;
+      document.getElementById("basketCount").innerText = count;
+    }
+
+    // 주문하기 버튼
+    function order() {
+      closeCart();
+      alert("🐼 주문해 주셔서 고맙습니다!\n지금은 연습용 화면이라 실제 결제는 이루어지지 않아요.");
     }
 
     // ===== 상품 검색 =====
@@ -556,8 +1177,10 @@
       }
     }
 
-    // ===== 할인율 자동 계산 =====
-    // 상품 카드를 하나씩 확인해서, 할인율을 가격 앞에 빨간색으로 넣습니다
+    // ===== 화면이 열릴 때 한 번 실행 =====
+    // 상품 카드를 하나씩 확인해서
+    //  1) 상품 정보를 카드에 저장해 두고 (장바구니가 꺼내 씁니다)
+    //  2) 할인율을 가격 앞에 빨간색으로 넣습니다
     var cards = document.querySelectorAll(".card");
 
     for (var i = 0; i < cards.length; i++) {
@@ -568,12 +1191,20 @@
       var oldPrice = Number(oldBox.innerText.replace(/,/g, "").replace("원", ""));
       var newPrice = Number(newBox.innerText.replace(/,/g, "").replace("원", ""));
 
+      // 상품 이름·그림·가격을 카드에 적어둡니다
+      cards[i].dataset.name  = cards[i].querySelector("h4").innerText;
+      cards[i].dataset.emoji = cards[i].querySelector(".emoji").innerText;
+      cards[i].dataset.price = newPrice;
+
       // 할인율 = (할인 전 - 지금) ÷ 할인 전 × 100, 소수점은 반올림
       var rate = Math.round((oldPrice - newPrice) / oldPrice * 100);
 
       // 가격 앞에 빨간 할인율을 붙입니다
       newBox.innerHTML = '<span class="sale">' + rate + '%</span>' + newBox.innerText;
     }
+
+    // 장바구니를 처음 한 번 그려줍니다 (비어 있다는 안내가 나옵니다)
+    drawCart();
 
   </script>
 
