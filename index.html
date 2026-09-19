@@ -51,6 +51,14 @@
 
     .cart:hover { background-color: #FBE5D2; }
 
+    /* 장바구니·회원 버튼을 나란히 */
+    .head-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;            /* 화면이 좁으면 아래로 내려감 */
+      gap: 10px;
+    }
+
     /* ===== 메뉴 4개 ===== */
     nav {
       background-color: #FBE5D2;
@@ -250,6 +258,141 @@
       color: #E03B1C;
       font-size: 22px;
       font-weight: bold;
+    }
+
+    /* ===== 회원가입 · 로그인 창 ===== */
+    .auth-box {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      box-sizing: border-box;
+      overflow: hidden;
+      background-color: #FFFDFB;
+      border-radius: 28px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 32px 70px rgba(70, 38, 14, 0.38),
+        0 4px 14px rgba(70, 38, 14, 0.18);
+      animation: popUp 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* 창 맨 위의 얇은 주황 띠 */
+    .auth-box::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #F5A85C, #F08A3C, #E56A15);
+    }
+
+    .auth-body {
+      padding: 24px 28px 28px 28px;
+    }
+
+    /* 입력칸 한 묶음 (설명 글 + 입력칸) */
+    .field {
+      display: block;
+      margin: 0 0 16px 0;
+    }
+
+    .field span {
+      display: block;
+      font-size: 15px;
+      font-weight: bold;
+      color: #7A6757;
+      margin: 0 0 6px 2px;
+    }
+
+    .field input {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 17px;
+      color: #4A3B32;
+      background-color: white;
+      border: 2px solid #F3E4D6;
+      border-radius: 14px;
+      padding: 13px 16px;
+      outline: none;
+      transition: 0.15s;
+    }
+
+    .field input:focus {
+      border-color: #F08A3C;
+      box-shadow: 0 0 0 4px rgba(240, 138, 60, 0.15);
+    }
+
+    /* 입력칸 아래 작은 안내 글 */
+    .field-note {
+      font-size: 14px;
+      color: #9C8878;
+      text-align: center;
+      margin: 0 0 18px 0;
+    }
+
+    /* 안내·오류 글 */
+    .auth-msg {
+      font-size: 15px;
+      line-height: 1.6;
+      border-radius: 12px;
+      padding: 0;
+      margin: 0;
+      display: none;              /* 할 말이 있을 때만 보입니다 */
+    }
+
+    .auth-msg.show {
+      display: block;
+      padding: 12px 14px;
+      margin: 0 0 16px 0;
+    }
+
+    /* 잘 된 경우 (초록) */
+    .auth-msg.ok {
+      background-color: #EEF7EA;
+      color: #3F7A2E;
+    }
+
+    /* 잘못된 경우 (빨강) */
+    .auth-msg.bad {
+      background-color: #FDEDEA;
+      color: #C03A1E;
+    }
+
+    /* 가입하기 버튼 */
+    .auth-main {
+      width: 100%;
+      background: linear-gradient(180deg, #F5A85C, #E56A15);
+      box-shadow: 0 8px 20px rgba(224, 106, 21, 0.32);
+      margin: 4px 0 0 0;
+    }
+
+    .auth-main:hover {
+      background: linear-gradient(180deg, #F08A3C, #C85A0F);
+      transform: translateY(-2px);
+    }
+
+    /* 가운데 구분 글 */
+    .auth-or {
+      text-align: center;
+      font-size: 14px;
+      color: #9C8878;
+      margin: 20px 0 10px 0;
+    }
+
+    /* 로그인 버튼 (연한 모양) */
+    .auth-sub {
+      width: 100%;
+      background-color: white;
+      border: 2px solid #F3E4D6;
+      color: #B35B1F;
+    }
+
+    .auth-sub:hover { background-color: #FBE5D2; }
+
+    /* 로그인한 뒤 맨 위에 보이는 버튼 */
+    .cart.logged-in {
+      background-color: #FBE5D2;
+      color: #8A5A2B;
     }
 
     /* ===== 장바구니 모달 ===== */
@@ -764,7 +907,10 @@
   <header>
     <h1>🐼 건강판다</h1>
     <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
-    <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
+    <div class="head-actions">
+      <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
+      <button class="cart" id="authBtn" onclick="authClick()">👤 회원가입 · 로그인</button>
+    </div>
   </header>
 
   <!-- 메뉴 4개 -->
@@ -797,7 +943,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <img class="photo" src="images/dental.jpg" alt="치석 케어 덴탈츄">
+      <img class="photo" src="images/dental.svg" alt="치석 케어 덴탈츄">
       <p class="category">치아 건강</p>
       <h4>치석 케어 덴탈츄</h4>
       <p class="old-price">19,000원</p>
@@ -807,7 +953,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <img class="photo" src="images/probiotics.jpg" alt="편안한 장 유산균">
+      <img class="photo" src="images/probiotics.svg" alt="편안한 장 유산균">
       <p class="category">장 건강</p>
       <h4>편안한 장 유산균</h4>
       <p class="old-price">25,000원</p>
@@ -818,7 +964,7 @@
     <div class="card shape2">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
-      <img class="photo" src="images/lutein.jpg" alt="맑은 눈 루테인">
+      <img class="photo" src="images/lutein.svg" alt="맑은 눈 루테인">
       <p class="category">눈·피부</p>
       <h4>맑은 눈 루테인</h4>
       <p class="old-price">28,000원</p>
@@ -828,7 +974,7 @@
 
     <div class="card shape3">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <img class="photo" src="images/omega3.jpg" alt="반짝 피부 오메가3">
+      <img class="photo" src="images/omega3.svg" alt="반짝 피부 오메가3">
       <p class="category">눈·피부</p>
       <h4>반짝 피부 오메가3</h4>
       <p class="old-price">29,000원</p>
@@ -839,7 +985,7 @@
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
-      <img class="photo" src="images/joint.jpg" alt="튼튼 관절 영양제">
+      <img class="photo" src="images/joint.svg" alt="튼튼 관절 영양제">
       <p class="category">튼튼 영양제</p>
       <h4>튼튼 관절 영양제</h4>
       <p class="old-price">32,000원</p>
@@ -849,7 +995,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <img class="photo" src="images/calm.jpg" alt="편안한 밤 진정츄">
+      <img class="photo" src="images/calm.svg" alt="편안한 밤 진정츄">
       <p class="category">마음 안정</p>
       <h4>편안한 밤 진정츄</h4>
       <p class="old-price">34,000원</p>
@@ -859,7 +1005,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <img class="photo" src="images/heart.jpg" alt="튼튼 심장 코엔자임">
+      <img class="photo" src="images/heart.svg" alt="튼튼 심장 코엔자임">
       <p class="category">튼튼 영양제</p>
       <h4>튼튼 심장 코엔자임</h4>
       <p class="old-price">38,000원</p>
@@ -871,6 +1017,58 @@
 
   <!-- 검색 결과가 없을 때 -->
   <p class="no-result" id="noResult">😢 찾으시는 상품이 없어요.<br>다른 이름으로 검색해 보세요.</p>
+
+  <!-- 회원가입 · 로그인 모달 -->
+  <div class="modal-back" id="authModal" onclick="backdropClose(event)">
+    <div class="auth-box" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+
+      <div class="basket-head">
+        <h3 id="authTitle">👤 회원가입 · 로그인</h3>
+        <div class="head-btns">
+          <button class="close-btn" onclick="closeAuth()" aria-label="닫기">✕</button>
+        </div>
+      </div>
+
+      <div class="auth-body">
+
+        <label class="field">
+          <span>이름</span>
+          <input type="text" id="authName" placeholder="홍길동"
+                 autocomplete="name" onkeyup="authEnter(event)">
+        </label>
+
+        <label class="field">
+          <span>이메일</span>
+          <input type="email" id="authEmail" placeholder="hong@example.com"
+                 autocomplete="email" onkeyup="authEnter(event)">
+        </label>
+
+        <label class="field">
+          <span>비밀번호</span>
+          <input type="password" id="authPw" placeholder="6자 이상"
+                 autocomplete="new-password" onkeyup="authEnter(event)">
+        </label>
+
+        <label class="field">
+          <span>비밀번호 확인</span>
+          <input type="password" id="authPw2" placeholder="한 번 더 적어주세요"
+                 autocomplete="new-password" onkeyup="authEnter(event)">
+        </label>
+
+        <!-- 로그인할 때는 이름·비밀번호 확인이 필요 없다는 안내 -->
+        <p class="field-note">로그인만 하실 때는 이메일과 비밀번호만 적으시면 됩니다.</p>
+
+        <!-- 안내·오류 글이 여기에 나옵니다 -->
+        <p class="auth-msg" id="authMsg"></p>
+
+        <button class="btn auth-main" id="signUpBtn" onclick="signUp()">가입하기</button>
+
+        <p class="auth-or">이미 회원이신가요?</p>
+        <button class="btn auth-sub" id="signInBtn" onclick="signIn()">로그인</button>
+
+      </div>
+    </div>
+  </div>
 
   <!-- 장바구니 모달 (평소에는 숨어 있다가 장바구니를 누르면 나타납니다) -->
   <div class="modal-back" id="cartModal" onclick="backdropClose(event)">
@@ -965,7 +1163,249 @@
 
   </footer>
 
+  <!-- 슈퍼베이스(Supabase) 연결 도구 불러오기 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    // ===== 슈퍼베이스 연결 =====
+    // 아래 두 값은 공개되어도 괜찮은 값입니다.
+    // (비밀 키인 service_role 키는 절대 여기에 적으면 안 됩니다)
+    var SUPABASE_URL = "https://jkqunlxlzhfgxtmobewe.supabase.co";
+    var SUPABASE_KEY = "sb_publishable_00wUYZE2qus3P_Mz9skcYg_FvEXGign";
+
+    // 연결에 실패해도 쇼핑몰 화면은 그대로 쓸 수 있게 감싸둡니다
+    var db = null;
+
+    try {
+      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log("슈퍼베이스 연결 완료");
+    } catch (e) {
+      console.log("슈퍼베이스 연결 실패:", e);
+    }
+
+    // ===== 회원가입 · 로그인 =====
+    // 지금 로그인한 사람을 기억해 둡니다 (로그인 전에는 null)
+    var user = null;
+
+    // 맨 위 회원 버튼을 눌렀을 때
+    function authClick() {
+      if (user) {
+        // 이미 로그인한 상태면 로그아웃을 물어봅니다
+        if (confirm(userName() + " 님, 로그아웃할까요?")) {
+          signOut();
+        }
+      } else {
+        openAuth();
+      }
+    }
+
+    function openAuth() {
+      document.getElementById("authModal").classList.add("open");
+      document.body.style.overflow = "hidden";
+      showAuthMsg("", "");
+      document.getElementById("authEmail").focus();
+    }
+
+    function closeAuth() {
+      document.getElementById("authModal").classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    // 입력칸에서 엔터를 치면 가입하기가 눌립니다
+    function authEnter(event) {
+      if (event.key === "Enter") {
+        signUp();
+      }
+    }
+
+    // 창 안에 안내 글을 띄웁니다 (kind: ok 또는 bad)
+    function showAuthMsg(text, kind) {
+      var box = document.getElementById("authMsg");
+
+      box.innerText = text;
+      box.className = "auth-msg";
+
+      if (text) {
+        box.classList.add("show");
+        box.classList.add(kind);
+      }
+    }
+
+    // 적으신 내용을 확인합니다.
+    // 문제가 있으면 안내를 띄우고 null 을 돌려줍니다.
+    // isSignUp 이 true 면 이름과 비밀번호 확인까지 함께 봅니다.
+    function readAuthForm(isSignUp) {
+      var name  = document.getElementById("authName").value.trim();
+      var email = document.getElementById("authEmail").value.trim();
+      var pw    = document.getElementById("authPw").value;
+      var pw2   = document.getElementById("authPw2").value;
+
+      if (!db) {
+        showAuthMsg("서버에 연결되지 않았어요. 잠시 뒤 다시 시도해 주세요.", "bad");
+        return null;
+      }
+
+      // 가입할 때만 이름을 확인합니다
+      if (isSignUp && name.length < 2) {
+        showAuthMsg("이름을 2자 이상 적어주세요.", "bad");
+        focusField("authName");
+        return null;
+      }
+
+      if (email.indexOf("@") < 0 || email.indexOf(".") < 0) {
+        showAuthMsg("이메일 주소를 정확히 적어주세요.", "bad");
+        focusField("authEmail");
+        return null;
+      }
+
+      if (pw.length < 6) {
+        showAuthMsg("비밀번호는 6자 이상으로 적어주세요.", "bad");
+        focusField("authPw");
+        return null;
+      }
+
+      // 가입할 때만 비밀번호 확인을 봅니다
+      if (isSignUp && pw !== pw2) {
+        showAuthMsg("비밀번호가 서로 달라요. 다시 확인해 주세요.", "bad");
+        focusField("authPw2");
+        return null;
+      }
+
+      return { name: name, email: email, pw: pw };
+    }
+
+    // 잘못 적은 칸으로 커서를 옮겨줍니다
+    function focusField(id) {
+      document.getElementById(id).focus();
+    }
+
+    // 버튼을 잠그거나 풀어줍니다
+    function lockAuthButtons(lock, workingId, workingText) {
+      document.getElementById("signUpBtn").disabled = lock;
+      document.getElementById("signInBtn").disabled = lock;
+
+      document.getElementById("signUpBtn").innerText =
+        (lock && workingId === "signUpBtn") ? workingText : "가입하기";
+
+      document.getElementById("signInBtn").innerText =
+        (lock && workingId === "signInBtn") ? workingText : "로그인";
+    }
+
+    // ===== 가입하기 =====
+    function signUp() {
+      var form = readAuthForm(true);   // true = 이름·비밀번호 확인까지 봅니다
+      if (!form) return;
+
+      showAuthMsg("", "");
+      lockAuthButtons(true, "signUpBtn", "가입하는 중...");
+
+      db.auth.signUp({
+        email: form.email,
+        password: form.pw,
+        options: { data: { name: form.name } }   // 이름을 회원 정보에 함께 저장
+      }).then(function (result) {
+        lockAuthButtons(false);
+
+        if (result.error) {
+          showAuthMsg(translateAuthError(result.error.message), "bad");
+          return;
+        }
+
+        // 확인 메일을 보내는 설정이면 session 이 비어 있습니다
+        if (result.data.session) {
+          showAuthMsg(form.name + " 님, 가입이 끝났어요. 환영합니다! 🐼", "ok");
+          setTimeout(closeAuth, 1400);
+        } else {
+          showAuthMsg(
+            form.email + " 으로 확인 메일을 보냈어요.\n메일 속 링크를 누르면 가입이 끝납니다.",
+            "ok"
+          );
+        }
+      });
+    }
+
+    // ===== 로그인 =====
+    function signIn() {
+      var form = readAuthForm(false);  // false = 이메일·비밀번호만 봅니다
+      if (!form) return;
+
+      showAuthMsg("", "");
+      lockAuthButtons(true, "signInBtn", "들어가는 중...");
+
+      db.auth.signInWithPassword({ email: form.email, password: form.pw }).then(function (result) {
+        lockAuthButtons(false);
+
+        if (result.error) {
+          showAuthMsg(translateAuthError(result.error.message), "bad");
+          return;
+        }
+
+        showAuthMsg("반갑습니다! 🐼", "ok");
+        setTimeout(closeAuth, 900);
+      });
+    }
+
+    // ===== 로그아웃 =====
+    function signOut() {
+      db.auth.signOut().then(function () {
+        alert("로그아웃했어요. 다음에 또 만나요! 🐼");
+      });
+    }
+
+    // 영어로 오는 오류 문구를 우리말로 바꿔줍니다
+    function translateAuthError(message) {
+      if (message.indexOf("already registered") >= 0) {
+        return "이미 가입된 이메일이에요. 아래 로그인을 눌러보세요.";
+      }
+      if (message.indexOf("Invalid login credentials") >= 0) {
+        return "이메일이나 비밀번호가 맞지 않아요.";
+      }
+      if (message.indexOf("Email not confirmed") >= 0) {
+        return "아직 메일 확인이 끝나지 않았어요. 받은 메일의 링크를 눌러주세요.";
+      }
+      if (message.indexOf("Password should be") >= 0) {
+        return "비밀번호는 6자 이상으로 적어주세요.";
+      }
+      return message;
+    }
+
+    // 로그인한 사람의 이름을 꺼냅니다 (이름이 없으면 이메일로 대신)
+    function userName() {
+      if (!user) return "";
+
+      if (user.user_metadata && user.user_metadata.name) {
+        return user.user_metadata.name;
+      }
+      return user.email;
+    }
+
+    // ===== 맨 위 회원 버튼 모양 바꾸기 =====
+    function drawUser() {
+      var button = document.getElementById("authBtn");
+
+      if (user) {
+        button.innerText = "👤 " + userName() + " 님";
+        button.classList.add("logged-in");
+      } else {
+        button.innerText = "👤 회원가입 · 로그인";
+        button.classList.remove("logged-in");
+      }
+    }
+
+    // 화면이 열릴 때 이미 로그인한 상태인지 확인하고,
+    // 이후 로그인·로그아웃이 일어날 때마다 버튼을 새로 그립니다
+    if (db) {
+      db.auth.getSession().then(function (result) {
+        user = result.data.session ? result.data.session.user : null;
+        drawUser();
+      });
+
+      db.auth.onAuthStateChange(function (event, session) {
+        user = session ? session.user : null;
+        drawUser();
+      });
+    }
+
     // 배너 버튼을 누르면 알림창이 뜹니다
     function showEvent() {
       alert("🐼 건강판다 할인 행사 진행 중!\n인기 건강식품을 최대 35% 저렴하게 만나보세요.");
@@ -995,12 +1435,16 @@
       if (event.target.id === "cartModal") {
         closeCart();
       }
+      if (event.target.id === "authModal") {
+        closeAuth();
+      }
     }
 
     // 키보드 Esc 를 눌러도 닫힙니다
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
         closeCart();
+        closeAuth();
       }
     });
 
@@ -1159,10 +1603,67 @@
       document.getElementById("basketCount").innerText = count;
     }
 
-    // 주문하기 버튼
+    // ===== 주문하기 =====
+    // 담은 상품을 슈퍼베이스 orders 표에 저장합니다
     function order() {
-      closeCart();
-      alert("🐼 주문해 주셔서 고맙습니다!\n지금은 연습용 화면이라 실제 결제는 이루어지지 않아요.");
+      if (cart.length === 0) return;
+
+      // 합계를 다시 계산합니다
+      var goods = 0;
+
+      for (var i = 0; i < cart.length; i++) {
+        goods = goods + cart[i].price * cart[i].count;
+      }
+
+      var ship = (goods >= FREE_SHIP) ? 0 : SHIP_FEE;
+
+      // 주문번호를 화면에서 미리 만들어 둡니다
+      // (예: HP-20260919-4821)
+      var now = new Date();
+      var ymd = now.getFullYear() +
+                String(now.getMonth() + 1).padStart(2, "0") +
+                String(now.getDate()).padStart(2, "0");
+      var orderNo = "HP-" + ymd + "-" + String(Math.floor(Math.random() * 9000) + 1000);
+
+      // 저장할 내용 한 덩어리
+      var newOrder = {
+        order_no: orderNo,        // 주문번호
+        items: cart,              // 담은 상품 목록 통째로
+        goods_total: goods,       // 상품 금액
+        ship_fee: ship,           // 배송비
+        total: goods + ship       // 결제 금액
+      };
+
+      // 연결이 안 되어 있으면 저장 없이 안내만 합니다
+      if (!db) {
+        closeCart();
+        alert("🐼 주문해 주셔서 고맙습니다!\n(지금은 서버에 연결되지 않아 저장은 되지 않았어요)");
+        return;
+      }
+
+      var button = document.querySelector(".order-btn");
+      button.innerText = "보내는 중...";
+      button.disabled = true;
+
+      // 저장만 하고 되읽지는 않습니다
+      // (되읽으려면 주문을 누구나 볼 수 있게 열어야 해서 위험합니다)
+      db.from("orders").insert(newOrder).then(function (result) {
+        button.innerText = "주문하기";
+        button.disabled = false;
+
+        if (result.error) {
+          console.log("주문 저장 실패:", result.error);
+          alert("주문을 저장하지 못했어요. 😢\n\n" + result.error.message);
+          return;
+        }
+
+        // 저장에 성공하면 장바구니를 비웁니다
+        cart = [];
+        drawCart();
+        closeCart();
+
+        alert("🐼 주문해 주셔서 고맙습니다!\n주문번호: " + orderNo + "\n\n주문 내역이 저장되었어요.");
+      });
     }
 
     // ===== 상품 검색 =====
