@@ -202,8 +202,14 @@
       padding: 4px 12px;
     }
 
-    .card .emoji {
-      font-size: 72px;            /* 상품 사진 대신 이모지 */
+    /* 상품 사진 */
+    .card .photo {
+      display: block;
+      width: 100%;
+      height: 180px;
+      object-fit: cover;          /* 비율을 지키며 칸을 가득 채웁니다 */
+      border-radius: 16px;
+      background-color: #FBE5D2;  /* 사진이 늦게 뜰 때 보이는 색 */
     }
 
     /* 상품명 위 카테고리 글씨 */
@@ -436,18 +442,22 @@
 
     .basket-row:last-child { border-bottom: none; }
 
-    /* 줄 왼쪽 작은 그림 */
+    /* 줄 왼쪽 작은 사진 */
     .thumb-sm {
       flex: none;
       width: 58px;
       height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(145deg, #FFF8F2, #FBE5D2);
+      overflow: hidden;           /* 사진이 둥근 모서리 밖으로 나가지 않게 */
+      background-color: #FBE5D2;
       border: 1px solid #F6E3D2;
       border-radius: 16px;
-      font-size: 28px;
+    }
+
+    .thumb-sm img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     /* 상품명과 가격을 한 줄에 나란히 */
@@ -733,6 +743,18 @@
       opacity: 0.85;
       margin: 0;
     }
+
+    /* 사진 출처 */
+    .foot-credit {
+      font-size: 13px;
+      opacity: 0.7;
+      margin: 6px 0 0 0;
+    }
+
+    .foot-credit a {
+      color: white;
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -775,7 +797,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <div class="emoji">🦷</div>
+      <img class="photo" src="images/dental.jpg" alt="치석 케어 덴탈츄">
       <p class="category">치아 건강</p>
       <h4>치석 케어 덴탈츄</h4>
       <p class="old-price">19,000원</p>
@@ -785,7 +807,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <div class="emoji">🌿</div>
+      <img class="photo" src="images/probiotics.jpg" alt="편안한 장 유산균">
       <p class="category">장 건강</p>
       <h4>편안한 장 유산균</h4>
       <p class="old-price">25,000원</p>
@@ -796,7 +818,7 @@
     <div class="card shape2">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
-      <div class="emoji">💊</div>
+      <img class="photo" src="images/lutein.jpg" alt="맑은 눈 루테인">
       <p class="category">눈·피부</p>
       <h4>맑은 눈 루테인</h4>
       <p class="old-price">28,000원</p>
@@ -806,7 +828,7 @@
 
     <div class="card shape3">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <div class="emoji">🐟</div>
+      <img class="photo" src="images/omega3.jpg" alt="반짝 피부 오메가3">
       <p class="category">눈·피부</p>
       <h4>반짝 피부 오메가3</h4>
       <p class="old-price">29,000원</p>
@@ -817,7 +839,7 @@
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
       <span class="best">BEST</span>
-      <div class="emoji">🦴</div>
+      <img class="photo" src="images/joint.jpg" alt="튼튼 관절 영양제">
       <p class="category">튼튼 영양제</p>
       <h4>튼튼 관절 영양제</h4>
       <p class="old-price">32,000원</p>
@@ -827,7 +849,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <div class="emoji">😴</div>
+      <img class="photo" src="images/calm.jpg" alt="편안한 밤 진정츄">
       <p class="category">마음 안정</p>
       <h4>편안한 밤 진정츄</h4>
       <p class="old-price">34,000원</p>
@@ -837,7 +859,7 @@
 
     <div class="card">
       <span class="heart" onclick="toggleHeart(this)">🤍</span>
-      <div class="emoji">❤️</div>
+      <img class="photo" src="images/heart.jpg" alt="튼튼 심장 코엔자임">
       <p class="category">튼튼 영양제</p>
       <h4>튼튼 심장 코엔자임</h4>
       <p class="old-price">38,000원</p>
@@ -938,6 +960,9 @@
     <!-- 저작권 -->
     <p class="foot-copy">© 2026 건강판다. All rights reserved.</p>
 
+    <!-- 사진 출처 -->
+    <p class="foot-credit">📷 상품 사진 출처: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a> 무료 이미지</p>
+
   </footer>
 
   <script>
@@ -984,7 +1009,7 @@
       var card = button.closest(".card");
 
       var name  = card.dataset.name;
-      var emoji = card.dataset.emoji;
+      var photo = card.dataset.photo;
       var price = Number(card.dataset.price);
 
       // 이미 담은 상품이면 줄을 늘리지 않고 개수만 1 늘립니다
@@ -993,7 +1018,7 @@
       if (found) {
         found.count = found.count + 1;
       } else {
-        cart.push({ name: name, emoji: emoji, price: price, count: 1 });
+        cart.push({ name: name, photo: photo, price: price, count: 1 });
       }
 
       drawCart();
@@ -1072,7 +1097,7 @@
 
         html = html +
           '<div class="basket-row">' +
-            '<div class="thumb-sm">' + item.emoji + '</div>' +
+            '<div class="thumb-sm"><img src="' + item.photo + '" alt=""></div>' +
             '<div class="basket-name">' +
               '<strong>' + item.name + '</strong>' +
               '<span>' + won(item.price) + ' / 개</span>' +
@@ -1191,9 +1216,9 @@
       var oldPrice = Number(oldBox.innerText.replace(/,/g, "").replace("원", ""));
       var newPrice = Number(newBox.innerText.replace(/,/g, "").replace("원", ""));
 
-      // 상품 이름·그림·가격을 카드에 적어둡니다
+      // 상품 이름·사진·가격을 카드에 적어둡니다
       cards[i].dataset.name  = cards[i].querySelector("h4").innerText;
-      cards[i].dataset.emoji = cards[i].querySelector(".emoji").innerText;
+      cards[i].dataset.photo = cards[i].querySelector(".photo").getAttribute("src");
       cards[i].dataset.price = newPrice;
 
       // 할인율 = (할인 전 - 지금) ÷ 할인 전 × 100, 소수점은 반올림
