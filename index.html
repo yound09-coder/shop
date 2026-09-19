@@ -16,22 +16,34 @@
       line-height: 1.7;
     }
 
-    /* ===== 맨 위: 쇼핑몰 이름 ===== */
+    /* ===== 맨 위: 왼쪽 가게 이름 / 오른쪽 버튼 ===== */
     header {
       background-color: #F08A3C;  /* 따뜻한 주황색 */
       color: white;
-      text-align: center;
-      padding: 35px 20px;
+      padding: 26px 24px;
+    }
+
+    /* 왼쪽과 오른쪽을 양 끝으로 밀어줍니다 */
+    .head-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;            /* 화면이 좁으면 아래로 내려감 */
+      gap: 16px 24px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 40px;
+      font-size: 34px;
+      white-space: nowrap;
     }
 
     header p {
-      margin: 12px 0 0 0;
-      font-size: 19px;
+      margin: 6px 0 0 0;
+      font-size: 17px;
+      opacity: 0.95;
     }
 
     /* 맨 위 장바구니 버튼 (누르면 장바구니 창이 열립니다) */
@@ -44,19 +56,30 @@
       font-size: 18px;
       font-weight: bold;
       border-radius: 999px;
-      padding: 8px 22px;
-      margin: 16px 0 0 0;
+      padding: 9px 20px;
+      margin: 0;
       cursor: pointer;
     }
 
     .cart:hover { background-color: #FBE5D2; }
 
-    /* 장바구니·회원 버튼을 나란히 */
+    /* 오른쪽 버튼들을 나란히 */
     .head-actions {
       display: flex;
-      justify-content: center;
+      align-items: center;
+      justify-content: flex-end;
       flex-wrap: wrap;            /* 화면이 좁으면 아래로 내려감 */
       gap: 10px;
+    }
+
+    /* 로그인한 사람 이름 (로그인 전에는 비어 있어 보이지 않습니다) */
+    .who {
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      opacity: 0.95;
+      white-space: nowrap;
+      margin-right: 2px;
     }
 
     /* ===== 메뉴 4개 ===== */
@@ -260,68 +283,6 @@
       font-weight: bold;
     }
 
-    /* ===== 로그인 뒤 펼쳐지는 회원 메뉴 ===== */
-    .user-wrap {
-      position: relative;         /* 메뉴 위치의 기준점 */
-    }
-
-    .user-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      z-index: 40;
-      width: 240px;
-      background-color: white;
-      border-radius: 18px;
-      box-shadow: 0 16px 34px rgba(80, 45, 20, 0.28);
-      padding: 16px;
-      text-align: left;
-      display: none;              /* 평소에는 숨겨둠 */
-      animation: popUp 0.18s ease-out;
-    }
-
-    .user-menu.open { display: block; }
-
-    .um-name {
-      font-size: 17px;
-      font-weight: bold;
-      color: #4A3B32;
-      margin: 0;
-    }
-
-    .um-email {
-      font-size: 13px;
-      color: #9C8878;
-      word-break: break-all;      /* 긴 이메일이 삐져나가지 않게 */
-      margin: 2px 0 0 0;
-    }
-
-    .um-line {
-      height: 1px;
-      background-color: #F3E4D6;
-      margin: 14px 0;
-    }
-
-    .um-item {
-      display: block;
-      width: 100%;
-      background: none;
-      border: none;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: bold;
-      color: #6B5A4C;
-      text-align: left;
-      cursor: pointer;
-      padding: 10px 12px;
-      transition: 0.15s;
-    }
-
-    .um-item:hover { background-color: #FBF3EB; color: #B35B1F; }
-
-    .um-item.out:hover { background-color: #FDEDEA; color: #C03A1E; }
-
     /* ===== 회원가입 · 로그인 창 ===== */
     .auth-box {
       position: relative;
@@ -505,10 +466,17 @@
       transform: translateY(-2px);
     }
 
-    /* 로그인한 뒤 맨 위에 보이는 버튼 */
+    /* 로그인한 뒤 보이는 로그아웃 버튼 (테두리만 있는 모양) */
     .cart.logged-in {
-      background-color: #FBE5D2;
-      color: #8A5A2B;
+      background-color: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.75);
+      color: white;
+      padding: 7px 18px;
+    }
+
+    .cart.logged-in:hover {
+      background-color: white;
+      color: #B35B1F;
     }
 
     /* ===== 장바구니 모달 ===== */
@@ -925,8 +893,11 @@
       .auth-body     { padding: 20px 20px 24px 20px; }
       .auth-box .basket-head { padding: 20px 20px 14px 20px; }
 
-      /* 회원 메뉴가 화면 밖으로 나가지 않게 */
-      .user-menu { right: auto; left: 50%; transform: translateX(-50%); }
+      /* 맨 위는 좁은 화면에서 위아래로 쌓고 가운데 정렬 */
+      .head-bar     { justify-content: center; text-align: center; }
+      .head-actions { justify-content: center; width: 100%; }
+      header h1     { font-size: 28px; white-space: normal; }
+      header p      { font-size: 15px; }
     }
 
     /* ===== 쇼핑몰 소개 영역 ===== */
@@ -1034,22 +1005,23 @@
 
   <!-- 맨 위: 쇼핑몰 이름과 한 줄 소개 -->
   <header>
-    <h1>🐼 건강판다</h1>
-    <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
-    <div class="head-actions">
-      <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
-      <!-- 회원 버튼과, 로그인 뒤 아래로 펼쳐지는 작은 메뉴 -->
-      <div class="user-wrap">
-        <button class="cart" id="authBtn" onclick="authClick()">👤 회원가입 · 로그인</button>
+    <div class="head-bar">
 
-        <div class="user-menu" id="userMenu">
-          <p class="um-name"  id="umName">홍길동 님</p>
-          <p class="um-email" id="umEmail">hong@example.com</p>
-          <div class="um-line"></div>
-          <button class="um-item" onclick="openCart()">🛒 장바구니 보기</button>
-          <button class="um-item out" onclick="signOut()">↪ 로그아웃</button>
-        </div>
+      <!-- 왼쪽: 쇼핑몰 이름 -->
+      <div class="head-left">
+        <h1>🐼 건강판다</h1>
+        <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
       </div>
+
+      <!-- 오른쪽: 회원 · 장바구니 -->
+      <div class="head-actions">
+        <!-- 로그인했을 때만 이름이 보입니다 -->
+        <span class="who" id="whoBox"></span>
+
+        <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
+        <button class="cart" id="authBtn" onclick="authClick()">👤 회원가입 · 로그인</button>
+      </div>
+
     </div>
   </header>
 
@@ -1334,29 +1306,14 @@
     var authMode = "signup";
 
     // 맨 위 회원 버튼을 눌렀을 때
+    // 로그인 전에는 가입·로그인 창을 열고, 로그인 뒤에는 로그아웃합니다
     function authClick() {
       if (user) {
-        toggleUserMenu();   // 로그인 상태면 작은 메뉴를 펼칩니다
+        signOut();
       } else {
         openAuth();
       }
     }
-
-    // ===== 회원 메뉴 =====
-    function toggleUserMenu() {
-      document.getElementById("userMenu").classList.toggle("open");
-    }
-
-    function closeUserMenu() {
-      document.getElementById("userMenu").classList.remove("open");
-    }
-
-    // 메뉴 바깥을 누르면 닫힙니다
-    document.addEventListener("click", function (event) {
-      if (!event.target.closest(".user-wrap")) {
-        closeUserMenu();
-      }
-    });
 
     // ===== 가입 / 로그인 탭 고르기 =====
     function setAuthMode(mode) {
@@ -1402,7 +1359,6 @@
     }
 
     function openAuth() {
-      closeUserMenu();
       document.getElementById("authModal").classList.add("open");
       document.body.style.overflow = "hidden";
       setAuthMode("signup");
@@ -1551,7 +1507,6 @@
 
     // ===== 로그아웃 =====
     function signOut() {
-      closeUserMenu();
 
       db.auth.signOut().then(function () {
         alert("로그아웃했어요. 다음에 또 만나요! 🐼");
@@ -1585,20 +1540,21 @@
       return user.email;
     }
 
-    // ===== 맨 위 회원 버튼과 메뉴 내용 바꾸기 =====
+    // ===== 로그인 여부에 따라 맨 위 모습 바꾸기 =====
     function drawUser() {
       var button = document.getElementById("authBtn");
+      var who    = document.getElementById("whoBox");
 
       if (user) {
-        button.innerText = "👤 " + userName() + " 님";
+        // 로그인한 상태: 이름을 보여주고 버튼은 로그아웃
+        who.innerText = "👤 " + userName() + " 님";
+        button.innerText = "↪ 로그아웃";
         button.classList.add("logged-in");
-
-        document.getElementById("umName").innerText  = userName() + " 님";
-        document.getElementById("umEmail").innerText = user.email;
       } else {
+        // 로그인 전: 이름은 감추고 버튼은 회원가입·로그인
+        who.innerText = "";
         button.innerText = "👤 회원가입 · 로그인";
         button.classList.remove("logged-in");
-        closeUserMenu();
       }
     }
 
@@ -1631,7 +1587,6 @@
 
     // ===== 장바구니 창 열고 닫기 =====
     function openCart() {
-      closeUserMenu();
       document.getElementById("cartModal").classList.add("open");
       document.body.style.overflow = "hidden";   // 뒤쪽 페이지는 스크롤되지 않게
     }
