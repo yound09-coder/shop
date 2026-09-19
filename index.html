@@ -260,12 +260,78 @@
       font-weight: bold;
     }
 
+    /* ===== 로그인 뒤 펼쳐지는 회원 메뉴 ===== */
+    .user-wrap {
+      position: relative;         /* 메뉴 위치의 기준점 */
+    }
+
+    .user-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      z-index: 40;
+      width: 240px;
+      background-color: white;
+      border-radius: 18px;
+      box-shadow: 0 16px 34px rgba(80, 45, 20, 0.28);
+      padding: 16px;
+      text-align: left;
+      display: none;              /* 평소에는 숨겨둠 */
+      animation: popUp 0.18s ease-out;
+    }
+
+    .user-menu.open { display: block; }
+
+    .um-name {
+      font-size: 17px;
+      font-weight: bold;
+      color: #4A3B32;
+      margin: 0;
+    }
+
+    .um-email {
+      font-size: 13px;
+      color: #9C8878;
+      word-break: break-all;      /* 긴 이메일이 삐져나가지 않게 */
+      margin: 2px 0 0 0;
+    }
+
+    .um-line {
+      height: 1px;
+      background-color: #F3E4D6;
+      margin: 14px 0;
+    }
+
+    .um-item {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      color: #6B5A4C;
+      text-align: left;
+      cursor: pointer;
+      padding: 10px 12px;
+      transition: 0.15s;
+    }
+
+    .um-item:hover { background-color: #FBF3EB; color: #B35B1F; }
+
+    .um-item.out:hover { background-color: #FDEDEA; color: #C03A1E; }
+
     /* ===== 회원가입 · 로그인 창 ===== */
     .auth-box {
       position: relative;
       width: 100%;
       max-width: 430px;
+      /* 화면 높이에서 막의 여백(위아래 24px씩)을 뺀 만큼까지만 커집니다 */
+      max-height: calc(100vh - 48px);
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
       background-color: #FFFDFB;
       border-radius: 28px;
@@ -285,9 +351,23 @@
       background: linear-gradient(90deg, #F5A85C, #F08A3C, #E56A15);
     }
 
+    /* 내용이 길면 이 안에서만 스크롤됩니다 (창이 잘리지 않게) */
     .auth-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
       padding: 24px 28px 28px 28px;
     }
+
+    .auth-body::-webkit-scrollbar { width: 8px; }
+
+    .auth-body::-webkit-scrollbar-thumb {
+      background-color: #EBD9C8;
+      border-radius: 999px;
+    }
+
+    /* 제목 줄은 창 위에 고정 */
+    .auth-box .basket-head { flex: none; }
 
     /* 입력칸 한 묶음 (설명 글 + 입력칸) */
     .field {
@@ -322,13 +402,67 @@
       box-shadow: 0 0 0 4px rgba(240, 138, 60, 0.15);
     }
 
-    /* 입력칸 아래 작은 안내 글 */
-    .field-note {
-      font-size: 14px;
-      color: #9C8878;
-      text-align: center;
-      margin: 0 0 18px 0;
+    /* ===== 가입 / 로그인 탭 ===== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background-color: #FBF3EB;
+      border-radius: 999px;
+      padding: 5px;
+      margin: 0 0 22px 0;
     }
+
+    .tab {
+      flex: 1;
+      background: none;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      color: #9C8878;
+      cursor: pointer;
+      padding: 11px 10px;
+      transition: 0.18s;
+    }
+
+    .tab:hover { color: #B35B1F; }
+
+    /* 지금 고른 탭 */
+    .tab.on {
+      background-color: white;
+      color: #B35B1F;
+      box-shadow: 0 2px 6px rgba(150, 90, 40, 0.18);
+    }
+
+    /* ===== 비밀번호 보기 버튼 ===== */
+    .pw-wrap {
+      position: relative;
+      display: block;
+    }
+
+    .pw-wrap input { padding-right: 52px; }
+
+    .pw-eye {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      border-radius: 999px;
+      font-size: 17px;
+      line-height: 1;
+      opacity: 0.45;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .pw-eye:hover { opacity: 1; background-color: #FBF3EB; }
+
+    .pw-eye.on { opacity: 1; }
 
     /* 안내·오류 글 */
     .auth-msg {
@@ -370,24 +504,6 @@
       background: linear-gradient(180deg, #F08A3C, #C85A0F);
       transform: translateY(-2px);
     }
-
-    /* 가운데 구분 글 */
-    .auth-or {
-      text-align: center;
-      font-size: 14px;
-      color: #9C8878;
-      margin: 20px 0 10px 0;
-    }
-
-    /* 로그인 버튼 (연한 모양) */
-    .auth-sub {
-      width: 100%;
-      background-color: white;
-      border: 2px solid #F3E4D6;
-      color: #B35B1F;
-    }
-
-    .auth-sub:hover { background-color: #FBE5D2; }
 
     /* 로그인한 뒤 맨 위에 보이는 버튼 */
     .cart.logged-in {
@@ -798,6 +914,19 @@
       .basket-body   { padding: 0 20px; }
       .basket-total  { padding: 18px 20px 22px 20px; }
       .basket-sum    { flex: 1; min-width: 0; text-align: left; }
+
+      /* 회원가입 창도 아래에서 올라오게 */
+      .auth-box {
+        max-width: none;
+        max-height: 94vh;
+        border-radius: 26px 26px 0 0;
+      }
+
+      .auth-body     { padding: 20px 20px 24px 20px; }
+      .auth-box .basket-head { padding: 20px 20px 14px 20px; }
+
+      /* 회원 메뉴가 화면 밖으로 나가지 않게 */
+      .user-menu { right: auto; left: 50%; transform: translateX(-50%); }
     }
 
     /* ===== 쇼핑몰 소개 영역 ===== */
@@ -909,7 +1038,18 @@
     <p>우리 아이의 건강을 챙기는 반려견 건강식품 전문몰</p>
     <div class="head-actions">
       <button class="cart" onclick="openCart()">🛒 장바구니 <span id="cartCount">0</span>개</button>
-      <button class="cart" id="authBtn" onclick="authClick()">👤 회원가입 · 로그인</button>
+      <!-- 회원 버튼과, 로그인 뒤 아래로 펼쳐지는 작은 메뉴 -->
+      <div class="user-wrap">
+        <button class="cart" id="authBtn" onclick="authClick()">👤 회원가입 · 로그인</button>
+
+        <div class="user-menu" id="userMenu">
+          <p class="um-name"  id="umName">홍길동 님</p>
+          <p class="um-email" id="umEmail">hong@example.com</p>
+          <div class="um-line"></div>
+          <button class="um-item" onclick="openCart()">🛒 장바구니 보기</button>
+          <button class="um-item out" onclick="signOut()">↪ 로그아웃</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -1031,7 +1171,13 @@
 
       <div class="auth-body">
 
-        <label class="field">
+        <!-- 가입과 로그인을 골라주는 탭 -->
+        <div class="tabs">
+          <button class="tab on" id="tabSignUp" onclick="setAuthMode('signup')">회원가입</button>
+          <button class="tab"    id="tabSignIn" onclick="setAuthMode('login')">로그인</button>
+        </div>
+
+        <label class="field" id="fieldName">
           <span>이름</span>
           <input type="text" id="authName" placeholder="홍길동"
                  autocomplete="name" onkeyup="authEnter(event)">
@@ -1045,26 +1191,23 @@
 
         <label class="field">
           <span>비밀번호</span>
-          <input type="password" id="authPw" placeholder="6자 이상"
-                 autocomplete="new-password" onkeyup="authEnter(event)">
+          <span class="pw-wrap">
+            <input type="password" id="authPw" placeholder="6자 이상"
+                   autocomplete="new-password" onkeyup="authEnter(event)">
+            <button type="button" class="pw-eye" onclick="togglePw()" aria-label="비밀번호 보기">👁</button>
+          </span>
         </label>
 
-        <label class="field">
+        <label class="field" id="fieldPw2">
           <span>비밀번호 확인</span>
           <input type="password" id="authPw2" placeholder="한 번 더 적어주세요"
                  autocomplete="new-password" onkeyup="authEnter(event)">
         </label>
 
-        <!-- 로그인할 때는 이름·비밀번호 확인이 필요 없다는 안내 -->
-        <p class="field-note">로그인만 하실 때는 이메일과 비밀번호만 적으시면 됩니다.</p>
-
         <!-- 안내·오류 글이 여기에 나옵니다 -->
         <p class="auth-msg" id="authMsg"></p>
 
-        <button class="btn auth-main" id="signUpBtn" onclick="signUp()">가입하기</button>
-
-        <p class="auth-or">이미 회원이신가요?</p>
-        <button class="btn auth-sub" id="signInBtn" onclick="signIn()">로그인</button>
+        <button class="btn auth-main" id="authMainBtn" onclick="authSubmit()">가입하기</button>
 
       </div>
     </div>
@@ -1187,22 +1330,82 @@
     // 지금 로그인한 사람을 기억해 둡니다 (로그인 전에는 null)
     var user = null;
 
+    // 지금 창이 가입 모드인지 로그인 모드인지 ("signup" 또는 "login")
+    var authMode = "signup";
+
     // 맨 위 회원 버튼을 눌렀을 때
     function authClick() {
       if (user) {
-        // 이미 로그인한 상태면 로그아웃을 물어봅니다
-        if (confirm(userName() + " 님, 로그아웃할까요?")) {
-          signOut();
-        }
+        toggleUserMenu();   // 로그인 상태면 작은 메뉴를 펼칩니다
       } else {
         openAuth();
       }
     }
 
+    // ===== 회원 메뉴 =====
+    function toggleUserMenu() {
+      document.getElementById("userMenu").classList.toggle("open");
+    }
+
+    function closeUserMenu() {
+      document.getElementById("userMenu").classList.remove("open");
+    }
+
+    // 메뉴 바깥을 누르면 닫힙니다
+    document.addEventListener("click", function (event) {
+      if (!event.target.closest(".user-wrap")) {
+        closeUserMenu();
+      }
+    });
+
+    // ===== 가입 / 로그인 탭 고르기 =====
+    function setAuthMode(mode) {
+      authMode = mode;
+
+      var isSignUp = (mode === "signup");
+
+      // 탭 모양 바꾸기
+      document.getElementById("tabSignUp").classList.toggle("on", isSignUp);
+      document.getElementById("tabSignIn").classList.toggle("on", !isSignUp);
+
+      // 가입할 때만 쓰는 칸을 보이거나 숨깁니다
+      document.getElementById("fieldName").style.display = isSignUp ? "block" : "none";
+      document.getElementById("fieldPw2").style.display  = isSignUp ? "block" : "none";
+
+      // 버튼 글씨 바꾸기
+      document.getElementById("authMainBtn").innerText = isSignUp ? "가입하기" : "로그인";
+
+      showAuthMsg("", "");
+    }
+
+    // 큰 버튼을 눌렀을 때 (지금 모드에 맞는 일을 합니다)
+    function authSubmit() {
+      if (authMode === "signup") {
+        signUp();
+      } else {
+        signIn();
+      }
+    }
+
+    // 비밀번호를 보이게/안 보이게 바꿉니다
+    function togglePw() {
+      var input = document.getElementById("authPw");
+      var eye   = document.querySelector(".pw-eye");
+
+      if (input.type === "password") {
+        input.type = "text";
+        eye.classList.add("on");
+      } else {
+        input.type = "password";
+        eye.classList.remove("on");
+      }
+    }
+
     function openAuth() {
+      closeUserMenu();
       document.getElementById("authModal").classList.add("open");
       document.body.style.overflow = "hidden";
-      showAuthMsg("", "");
+      setAuthMode("signup");
       document.getElementById("authEmail").focus();
     }
 
@@ -1211,10 +1414,10 @@
       document.body.style.overflow = "";
     }
 
-    // 입력칸에서 엔터를 치면 가입하기가 눌립니다
+    // 입력칸에서 엔터를 치면 큰 버튼이 눌립니다
     function authEnter(event) {
       if (event.key === "Enter") {
-        signUp();
+        authSubmit();
       }
     }
 
@@ -1279,16 +1482,17 @@
       document.getElementById(id).focus();
     }
 
-    // 버튼을 잠그거나 풀어줍니다
-    function lockAuthButtons(lock, workingId, workingText) {
-      document.getElementById("signUpBtn").disabled = lock;
-      document.getElementById("signInBtn").disabled = lock;
+    // 큰 버튼을 잠그거나 풀어줍니다
+    function lockAuthButtons(lock, workingText) {
+      var button = document.getElementById("authMainBtn");
 
-      document.getElementById("signUpBtn").innerText =
-        (lock && workingId === "signUpBtn") ? workingText : "가입하기";
+      button.disabled = lock;
 
-      document.getElementById("signInBtn").innerText =
-        (lock && workingId === "signInBtn") ? workingText : "로그인";
+      if (lock) {
+        button.innerText = workingText;
+      } else {
+        button.innerText = (authMode === "signup") ? "가입하기" : "로그인";
+      }
     }
 
     // ===== 가입하기 =====
@@ -1297,7 +1501,7 @@
       if (!form) return;
 
       showAuthMsg("", "");
-      lockAuthButtons(true, "signUpBtn", "가입하는 중...");
+      lockAuthButtons(true, "가입하는 중...");
 
       db.auth.signUp({
         email: form.email,
@@ -1330,7 +1534,7 @@
       if (!form) return;
 
       showAuthMsg("", "");
-      lockAuthButtons(true, "signInBtn", "들어가는 중...");
+      lockAuthButtons(true, "들어가는 중...");
 
       db.auth.signInWithPassword({ email: form.email, password: form.pw }).then(function (result) {
         lockAuthButtons(false);
@@ -1347,6 +1551,8 @@
 
     // ===== 로그아웃 =====
     function signOut() {
+      closeUserMenu();
+
       db.auth.signOut().then(function () {
         alert("로그아웃했어요. 다음에 또 만나요! 🐼");
       });
@@ -1379,16 +1585,20 @@
       return user.email;
     }
 
-    // ===== 맨 위 회원 버튼 모양 바꾸기 =====
+    // ===== 맨 위 회원 버튼과 메뉴 내용 바꾸기 =====
     function drawUser() {
       var button = document.getElementById("authBtn");
 
       if (user) {
         button.innerText = "👤 " + userName() + " 님";
         button.classList.add("logged-in");
+
+        document.getElementById("umName").innerText  = userName() + " 님";
+        document.getElementById("umEmail").innerText = user.email;
       } else {
         button.innerText = "👤 회원가입 · 로그인";
         button.classList.remove("logged-in");
+        closeUserMenu();
       }
     }
 
@@ -1421,6 +1631,7 @@
 
     // ===== 장바구니 창 열고 닫기 =====
     function openCart() {
+      closeUserMenu();
       document.getElementById("cartModal").classList.add("open");
       document.body.style.overflow = "hidden";   // 뒤쪽 페이지는 스크롤되지 않게
     }
